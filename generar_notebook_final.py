@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 BASE_DIR = Path("/Volumes/dgx/UABC/RRNN/desercion_escolar")
-OUT = BASE_DIR / "reporte_final_desercion_escolar_limpio.ipynb"
+OUT = BASE_DIR / "reporte.ipynb"
 
 
 def md(text: str):
@@ -44,15 +44,14 @@ cells = []
 
 cells.append(
     md(
-        "# Examen 1 - Reporte experimental final\n\n"
-        "Clasificación del desempeño académico estudiantil mediante redes neuronales y aprendizaje automático."
+        "# Examen 1\n\n"
+        "## Reporte experimental"
     )
 )
 
 cells.append(
     md(
-        "## 1. Librerías y configuración\n\n"
-        "Configuración general del entorno de trabajo."
+        "## 1. Librerías y configuración"
     )
 )
 
