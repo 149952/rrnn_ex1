@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 
-BASE_DIR = Path("/Volumes/dgx/UABC/RRNN/desercion_escolar")
+BASE_DIR = Path(__file__).resolve().parent
 OUT = BASE_DIR / "reporte.ipynb"
 
 
