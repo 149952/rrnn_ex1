@@ -10,7 +10,7 @@
 \usepackage{amsmath}
 \usepackage[hidelinks]{hyperref}
 
-\title{Clasificación del desempeño académico estudiantil mediante MLP y Random Forest}
+\title{Modelado predictivo del rendimiento estudiantil mediante técnicas de Machine Learning}
 
 \author{
 \IEEEauthorblockN{Ramon Aguilera Ruben \and Torres Laveaga Manuel}
@@ -388,7 +388,7 @@ resultados finales de clasificación. Las figuras exploratorias
 permiten comprender la estructura del problema antes de interpretar
 el desempeño de los modelos.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{grafica_distribucion_clases.png}
 \caption{Distribución de clases del conjunto de datos.}
@@ -402,7 +402,7 @@ tiene consecuencias directas sobre el comportamiento de los modelos
 y justifica el uso de métricas macro para evaluar el desempeño por
 clase de manera equitativa.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{graficas_distribucion_variables_continuas.png}
 \caption{Distribución de las variables continuas utilizadas en el estudio.}
@@ -415,7 +415,7 @@ baja capacidad discriminativa. El tiempo de estudio semanal, las
 ausencias y el promedio general muestran variabilidad más amplia,
 sugiriendo mayor potencial explicativo.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{matriz_correlacion.png}
 \caption{Matriz de correlación entre variables.}
@@ -429,7 +429,7 @@ lo que es coherente con la codificación del problema. Las ausencias
 muestran correlación positiva con la clase de calificación, indicando
 que mayor ausentismo se asocia con peor desempeño.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{boxplots_variables_por_clase.png}
 \caption{Distribución de variables continuas por clase mediante diagramas de caja.}
@@ -443,7 +443,7 @@ progresivamente conforme empeora la clase, mientras que el promedio
 general disminuye. La edad permanece estable entre clases, confirmando
 su baja capacidad discriminativa.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{arquitectura_mlp_principal.png}
 \caption{Arquitectura del MLP principal utilizada en el experimento.}
@@ -455,7 +455,7 @@ modelo principal: capa de entrada, cuatro capas densas con activación
 ReLU y \textit{Dropout}(0.2), y capa de salida con cinco neuronas y
 activación \textit{softmax}.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_mlp.png}
 \caption{Comparación de hiperparámetros evaluados para el MLP principal.}
@@ -468,7 +468,7 @@ hiperparámetros del MLP. Se observa que las configuraciones con
 valores de F1 macro en validación, mientras que \texttt{SGD} con
 tasas más altas presenta mayor variabilidad en los resultados.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{curvas_entrenamiento_mlp.png}
 \caption{Curvas de pérdida y exactitud del mejor MLP durante entrenamiento y validación.}
@@ -482,7 +482,7 @@ y validación. La curva de exactitud confirma una mejora sostenida y
 estable. La proximidad entre ambas curvas sugiere que el
 \textit{Dropout} cumplió su función regulatoria de manera efectiva.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_random_forest.png}
 \caption{Comparación de hiperparámetros evaluados para Random Forest.}
@@ -495,7 +495,7 @@ profundidad sin límite y tamaños mínimos de hoja pequeños tienden a
 concentrar los mejores resultados, aunque con diferencias marginales
 entre ellas.
 
-\begin{table}[!t]
+\begin{table}[htbp]
 \centering
 \caption{Comparación final de modelos}
 \scriptsize
@@ -518,7 +518,7 @@ macro de 0.7643, resultado sólido considerando la arquitectura fija
 requerida. \textit{Random Forest} superó al MLP en todas las métricas,
 alcanzando 0.9331 de exactitud y 0.8604 de F1 macro.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{matrices_confusion_comparadas.png}
 \caption{Matrices de confusión normalizadas del MLP principal y de Random Forest.}
@@ -534,7 +534,7 @@ identificación superior. Los errores se concentran principalmente
 entre clases adyacentes, lo que es coherente con la naturaleza
 ordinal del problema.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{comparacion_metricas_modelos.png}
 \caption{Comparación de métricas entre modelos.}
@@ -547,14 +547,14 @@ Forest} sobre el MLP es consistente en exactitud, precisión macro,
 sensibilidad macro y puntaje F1 macro, y no se limita a una sola
 métrica.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{importancia_variables_random_forest.png}
 \caption{Importancia de variables estimada por Random Forest.}
 \label{fig:importancia}
 \end{figure}
 
-\begin{table}[!t]
+\begin{table}[htbp]
 \centering
 \caption{Variables más relevantes según Random Forest}
 \scriptsize
@@ -626,13 +626,13 @@ o indicadores socioeconómicos más granulares.
 
 \section{Conclusiones}\label{sec:conclusiones}
 
-Se resolvió satisfactoriamente un problema de clasificación del
-desempeño académico estudiantil a partir del \textit{Student
-Performance Dataset}. El MLP principal cumplió con la arquitectura
-requerida y logró un desempeño alto (exactitud 0.8607, F1 macro
-0.7643). El modelo comparativo \textit{Random Forest}, seleccionado
-y fundamentado a partir de la literatura, obtuvo el mejor resultado
-final en todas las métricas (exactitud 0.9331, F1 macro 0.8604).
+El estudio mostró que el rendimiento académico estudiantil puede
+modelarse con alto desempeño a partir de variables demográficas,
+hábitos de estudio, apoyo parental y promedio general. En el escenario
+principal, el MLP alcanzó una exactitud de 0.8607 y un puntaje F1
+macro de 0.7643, mientras que \textit{Random Forest} obtuvo el mejor
+resultado global con una exactitud de 0.9331 y un puntaje F1 macro de
+0.8604.
 
 Los hallazgos muestran que la combinación de preprocesamiento
 adecuado, partición estratificada, búsqueda sistemática de
@@ -643,48 +643,55 @@ clásico confirma que, en datos tabulares compactos con variables
 altamente informativas, \textit{Random Forest} puede ser más
 conveniente que una arquitectura densa.
 
-Como trabajo futuro, sería relevante evaluar el desempeño de los
-modelos excluyendo \texttt{GPA} del conjunto de atributos, de modo
-que la clasificación opere únicamente sobre variables disponibles
-antes del periodo evaluado. Esto transformaría el problema en
-predicción genuina y permitiría estimar con mayor rigor la utilidad
-institucional del modelo para la identificación temprana de
-estudiantes en riesgo.
+El análisis complementario del apéndice mostró además que, aun sin
+información académica previa consolidada, es posible recuperar señal
+predictiva útil mediante variables de comportamiento y acompañamiento.
+Sin embargo, también evidenció un límite importante de separabilidad
+entre los perfiles de desempeño más bajos y sus clases vecinas, lo
+que sugiere que una caracterización temprana más precisa requeriría
+atributos adicionales, por ejemplo historial académico por periodo o
+indicadores contextuales más finos. En conjunto, los resultados
+apuntan a dos lecturas complementarias: una de clasificación del
+desempeño observado con alta exactitud, y otra de identificación
+temprana del riesgo académico con valor institucional, aunque todavía
+condicionada por la información disponible en el dataset.
 
 \appendices
-\section{Predicción temprana sin historial de calificaciones}\label{sec:apendice_temprana}
+\phantomsection
+\section{Caracterización inicial del estudiante sin información académica previa}\label{sec:apendice_temprana}
 
-Este apéndice no se plantea como una repetición del experimento
-principal, sino como una pregunta distinta y naturalmente derivada de
-la discusión anterior: si \texttt{GPA} ya contiene una parte central
-del resultado que se desea clasificar, \textit{¿qué capacidad
-predictiva real conserva el perfil del estudiante antes de que ese
-resultado exista?} La utilidad institucional de esta pregunta es
-clara. Un sistema de alerta temprana no siempre dispone del promedio
-final del periodo, pero sí puede conocer variables como ausencias,
-tiempo de estudio, tutorías, apoyo parental y participación en
-actividades.
+\textit{¿Qué puede saberse del perfil de un estudiante antes de contar
+con información académica consolidada?} Esta es la pregunta que da
+origen a este apéndice. Desde una perspectiva institucional, su
+interés es claro: un sistema de alerta temprana no siempre dispone del
+promedio final del periodo ni de una etiqueta de desempeño ya
+construida, pero sí puede conocer variables de contexto y hábitos como
+ausencias, tiempo de estudio, tutorías, apoyo parental y participación
+en actividades.
 
 \subsection{Motivación}
 
 En el cuerpo principal del trabajo, \texttt{GPA} fue una variable
-legítima porque el enunciado no prohibía su uso y el objetivo era
+válida porque el enunciado no prohibía su uso y el objetivo era
 comparar modelos sobre el conjunto completo de atributos. Sin
-embargo, desde una perspectiva de intervención temprana,
-\texttt{GPA} debe entenderse como una variable concurrente al
-resultado, no como una señal disponible antes del desempeño
-consolidado. Por ello, se abrió una línea exploratoria separada en la
+embargo, para fines de caracterización inicial del estudiante,
+\texttt{GPA} deja de ser una señal adecuada, porque forma parte del
+resultado ya observado y no de la información disponible al inicio del
+seguimiento. Por ello, se abrió una línea exploratoria separada en la
 que se excluyó \texttt{GPA} y se reformuló la tarea como una
-aproximación a la predicción temprana del riesgo académico.
+aproximación a la identificación temprana de perfiles de riesgo
+académico.
 
 \subsection{Ingeniería de variables}
 
-Para este escenario se trabajó con un conjunto base sin
-\texttt{GPA} y posteriormente se construyó una versión enriquecida
+Para este escenario se trabajó con un conjunto base formado por
+variables demográficas, de hábitos y de apoyo, sin incluir
+\texttt{GPA}. Posteriormente se construyó una versión enriquecida
 mediante ingeniería de variables. La intención no fue incrementar el
-número de atributos de manera arbitraria, sino aproximar conductas
-académicas relevantes que podrían estar disponibles durante el
-periodo escolar.
+número de atributos de manera arbitraria, sino aproximar señales de
+conducta y acompañamiento que podrían estar disponibles durante el
+periodo escolar, antes de contar con un resultado académico
+consolidado.
 
 Entre las variables derivadas más relevantes se encuentran:
 \begin{itemize}
@@ -704,49 +711,53 @@ es decir, indicadores indirectos del modo en que un estudiante se
 vincula con su proceso formativo antes de contar con una calificación
 final consolidada.
 
-\subsection{Resultados sin \texttt{GPA}}
+\subsection{Resultados de caracterización sin información académica previa}
 
 La Tabla~\ref{tab:apendice_comparacion_sin_gpa} muestra el efecto de
-la ingeniería de variables sobre el mejor modelo sin \texttt{GPA}. El
-conjunto base alcanzó una exactitud de 0.7131 y un puntaje F1 macro de
-0.5624. Al incorporar ingeniería de variables, el rendimiento aumentó
-hasta 0.7604 de exactitud y 0.6039 de puntaje F1 macro. La mejora no
-es marginal: implica recuperar señal predictiva útil a partir de
-relaciones conductuales y contextuales, aun cuando se elimina la
-variable más directamente asociada con el resultado final.
+la ingeniería de variables sobre el mejor modelo construido sin
+\texttt{GPA}. El conjunto base alcanzó una exactitud de 0.7131 y un
+puntaje F1 macro de 0.5624. Al incorporar ingeniería de variables, el
+rendimiento aumentó hasta 0.7604 de exactitud y 0.6039 de puntaje F1
+macro. La mejora no es marginal: implica recuperar señal útil a partir
+de relaciones conductuales y contextuales, incluso cuando el modelo ya
+no dispone de la variable más directamente asociada con el resultado
+académico final.
 
-\begin{table}[!t]
+\begin{table}[htbp]
 \centering
-\caption{Comparación sin \texttt{GPA}: conjunto base vs ingeniería de variables}
+\caption{Caracterización inicial: conjunto base vs ingeniería de variables}
 \scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{2.5cm}cccc}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{p{2.6cm}cccc}
 \toprule
-Escenario & Exactitud & Precisión macro & Sensibilidad macro & Puntaje F1 macro \\
+Escenario & Exactitud & \shortstack{Precisión\\macro} & \shortstack{Sensibilidad\\macro} & \shortstack{Puntaje F1\\macro} \\
 \midrule
 Base sin \texttt{GPA} & 0.7131 & 0.6222 & 0.5490 & 0.5624 \\
 Ingeniería de variables & 0.7604 & 0.6495 & 0.5946 & 0.6039 \\
 \bottomrule
 \end{tabular}
+}
 \normalsize
 \label{tab:apendice_comparacion_sin_gpa}
 \end{table}
 
-Este resultado permite una interpretación importante: sin
-\texttt{GPA}, el problema se vuelve claramente más difícil que el del
-cuerpo principal, pero no se vuelve trivial ni imposible. La
-ingeniería de variables aporta valor real porque logra recuperar parte
-de la estructura latente del comportamiento estudiantil.
+Este resultado permite una interpretación importante: cuando se
+elimina la información académica ya consolidada, el problema se vuelve
+claramente más difícil que el del cuerpo principal, pero no se vuelve
+trivial ni imposible. La ingeniería de variables aporta valor real
+porque logra recuperar parte de la estructura latente del
+comportamiento estudiantil.
 
 \subsection{Límite de separabilidad de la clase 0}
 
-El aspecto más difícil del escenario sin \texttt{GPA} fue la
+El aspecto más difícil de esta caracterización temprana fue la
 identificación de la clase~0, correspondiente al nivel más bajo de
 desempeño. Para determinar si ese problema dependía del modelo o del
 propio dataset, se realizó un análisis de separabilidad entre la
 clase~0 y las clases cercanas.
 
-\begin{table}[!t]
+\begin{table}[htbp]
 \centering
 \caption{Variables con mayor separación entre clase 0 y clase 1}
 \scriptsize
@@ -773,24 +784,48 @@ la razón estudio/ausencias, el apoyo parental y las interacciones
 relacionadas con apoyo y tutoría. Sin embargo, los niveles de
 separación son moderados y no permiten una distinción limpia.
 
-\begin{figure}[!t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{separabilidad_pca.png}
-\caption{Visualización en dos componentes principales de la separabilidad entre clases sin \texttt{GPA}.}
+\caption{Visualización en dos componentes principales de la separabilidad entre clases sin información académica previa.}
 \label{fig:apendice_pca}
 \end{figure}
 
 La Figura~\ref{fig:apendice_pca} refuerza este hallazgo de forma
 visual. Aunque la clase~0 presenta cierta tendencia a ocupar regiones
 distintas del espacio proyectado, existe traslape considerable con la
-clase~1. Esto explica por qué varios enfoques adicionales
-(\textit{SMOTE}, clasificación ordinal, ajuste de umbrales, dos
-etapas e incluso métodos alternativos como
-\textit{HistGradientBoosting}) no lograron superar de manera
-consistente al mejor \textit{Random Forest} con ingeniería de
-variables.
+clase~1. Para dimensionar mejor este límite, también se exploraron
+estrategias adicionales sobre el mismo escenario de caracterización
+temprana, como se resume en la Tabla~\ref{tab:apendice_estrategias}.
 
-\begin{figure}[!t]
+\begin{table}[htbp]
+\centering
+\caption{Estrategias exploradas en el escenario sin información académica previa}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{3.0cm}cc}
+\toprule
+Estrategia & Exactitud & Puntaje F1 macro \\
+\midrule
+Random Forest con ingeniería de variables & 0.7604 & 0.6039 \\
+Threshold tuning sobre clase 0 & 0.7577 & 0.5974 \\
+Clasificación ordinal Frank \& Hall & 0.7493 & 0.5829 \\
+HistGradientBoosting & 0.7075 & 0.5584 \\
+SMOTE + Random Forest & 0.7019 & 0.5705 \\
+Clasificación en dos etapas & 0.7103 & 0.5350 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:apendice_estrategias}
+\end{table}
+
+La Tabla~\ref{tab:apendice_estrategias} muestra que ninguna de estas
+variantes logró superar al mejor \textit{Random Forest} con
+ingeniería de variables. En otras palabras, el cuello de botella no
+parece estar únicamente en la elección del algoritmo, sino en el
+solapamiento real entre perfiles cercanos de bajo desempeño.
+
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{separabilidad_distribuciones.png}
 \caption{Distribuciones comparadas de las variables más separables entre clase 0 y clase 1.}
@@ -806,12 +841,12 @@ escenario clase~0 contra todas las demás clases se obtuvo un AUC de
 conjunto global, pero su frontera más problemática está precisamente
 en la cercanía con la clase~1.
 
-En consecuencia, el límite principal del escenario sin \texttt{GPA}
-no parece estar únicamente en la arquitectura del clasificador, sino
-en el nivel de solapamiento real entre perfiles de bajo desempeño y
+En consecuencia, el límite principal de este escenario no parece
+estar únicamente en la arquitectura del clasificador, sino en el
+nivel de solapamiento real entre perfiles de bajo desempeño y
 desempeño inmediatamente superior. Este apéndice, por tanto, no solo
 documenta un experimento alternativo, sino que ofrece una lectura más
-institucional del problema: aun sin historial de calificaciones, los
+institucional del problema: aun sin información académica previa, los
 atributos conductuales y de apoyo permiten recuperar señal relevante,
 pero el techo de separabilidad del dataset impone una restricción
 natural sobre la detección temprana del riesgo severo.
