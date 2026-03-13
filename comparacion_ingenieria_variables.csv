@@ -1,0 +1,6 @@
+feature_set,best_config,accuracy,precision_macro,recall_macro,f1_macro
+ingenieria,"{'class_weight': None, 'max_depth': 10, 'min_samples_leaf': 4, 'n_estimators': 200}",0.7604,0.6495,0.5946,0.6039
+academico,"{'class_weight': None, 'max_depth': 10, 'min_samples_leaf': 2, 'n_estimators': 200}",0.7298,0.6185,0.5833,0.5912
+conductual,"{'class_weight': None, 'max_depth': None, 'min_samples_leaf': 1, 'n_estimators': 200}",0.727,0.6001,0.5758,0.5814
+seleccion_por_importancia,"{'class_weight': None, 'max_depth': None, 'min_samples_leaf': 1, 'n_estimators': 400}",0.7326,0.5888,0.5646,0.566
+base,"{'class_weight': None, 'max_depth': None, 'min_samples_leaf': 2, 'n_estimators': 200}",0.7131,0.6222,0.549,0.5624
