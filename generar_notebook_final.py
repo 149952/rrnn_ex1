@@ -44,20 +44,15 @@ cells = []
 
 cells.append(
     md(
-        "# Examen 1 - Reporte Experimental Final\n\n"
-        "Notebook orientado al reporte IEEE para:\n"
-        "- inspeccionar y visualizar el conjunto de datos;\n"
-        "- entrenar el **MLP principal** con la arquitectura base del examen;\n"
-        "- comparar contra **Random Forest** como modelo adicional sustentado en literatura;\n"
-        "- generar tablas, métricas, matrices de confusión e importancia de variables.\n\n"
-        "**Escenario central:** clasificación de `GradeClass` usando el dataset completo, incluyendo `GPA`."
+        "# Examen 1 - Reporte experimental final\n\n"
+        "Clasificación del desempeño académico estudiantil mediante redes neuronales y aprendizaje automático."
     )
 )
 
 cells.append(
     md(
         "## 1. Librerías y configuración\n\n"
-        "La semilla se fija para hacer reproducibles, en la medida de lo posible, las corridas."
+        "Configuración general del entorno de trabajo."
     )
 )
 
@@ -126,9 +121,8 @@ cells.append(
         "pd.set_option('display.max_columns', None)\n"
         "pd.set_option('display.width', 160)\n"
         "sns.set_theme(style='whitegrid', palette='deep')\n"
-        "print('BASE_DIR =', BASE_DIR)\n"
-        "print('DATASET =', DATASET)\n"
-        "print('Existe dataset =', DATASET.exists())"
+        "if not DATASET.exists():\n"
+        "    raise FileNotFoundError(f'No se encontró el conjunto de datos en: {DATASET}')"
     )
 )
 
@@ -214,8 +208,7 @@ cells.append(
 cells.append(
     md(
         "## 4. Preparación de datos\n\n"
-        "- Se elimina implícitamente `StudentID` por ser un identificador.\n"
-        "- Se conserva `GPA` porque el enunciado no prohíbe su uso y la explicación oral del profesor sugiere que el dataset debe permitir desempeños superiores al 80%.\n"
+        "- Se excluye `StudentID` por tratarse de un identificador.\n"
         "- Se usa una **partición estratificada 70/15/15**."
     )
 )
@@ -241,8 +234,12 @@ cells.append(
         "X_train_rf = X_train_df.astype(float).copy()\n"
         "X_val_rf = X_val_df.astype(float).copy()\n"
         "X_test_rf = X_test_df.astype(float).copy()\n\n"
-        "print('Train MLP:', X_train_mlp.shape, 'Val MLP:', X_val_mlp.shape, 'Test MLP:', X_test_mlp.shape)\n"
-        "print('Train RF:', X_train_rf.shape, 'Val RF:', X_val_rf.shape, 'Test RF:', X_test_rf.shape)\n"
+        "print('Conjunto de entrenamiento (MLP):', X_train_mlp.shape)\n"
+        "print('Conjunto de validación (MLP):', X_val_mlp.shape)\n"
+        "print('Conjunto de prueba (MLP):', X_test_mlp.shape)\n"
+        "print('Conjunto de entrenamiento (Random Forest):', X_train_rf.shape)\n"
+        "print('Conjunto de validación (Random Forest):', X_val_rf.shape)\n"
+        "print('Conjunto de prueba (Random Forest):', X_test_rf.shape)\n"
         "print('Clases en entrenamiento:', np.unique(y_train))"
     )
 )
@@ -420,7 +417,6 @@ cells.append(
         "    plt.tight_layout()\n"
         "    plt.savefig(BASE_DIR / 'arquitectura_mlp_principal.png', dpi=160, bbox_inches='tight', facecolor=fig.get_facecolor())\n"
         "    plt.show()\n"
-        "    print('Diagrama guardado en:', BASE_DIR / 'arquitectura_mlp_principal.png')\n\n"
         "draw_network_mlp_examen(X_train_mlp.shape[1], len(np.unique(y_train)))"
     )
 )
@@ -536,9 +532,9 @@ cells.append(
     code(
         "report_mlp_df = pd.DataFrame(classification_report(y_test, mlp_pred, output_dict=True, zero_division=0)).transpose().reset_index().rename(columns={'index': 'clase'})\n"
         "report_rf_df = pd.DataFrame(classification_report(y_test, rf_pred, output_dict=True, zero_division=0)).transpose().reset_index().rename(columns={'index': 'clase'})\n\n"
-        "print('Reporte de clasificación - MLP principal')\n"
+        "print('Reporte de clasificación del MLP principal')\n"
         "display(report_mlp_df)\n\n"
-        "print('Reporte de clasificación - Random Forest')\n"
+        "print('Reporte de clasificación de Random Forest')\n"
         "display(report_rf_df)"
     )
 )
@@ -631,8 +627,6 @@ cells.append(
         "plt.tight_layout()\n"
         "plt.savefig(BASE_DIR / 'confusion_matrix_random_forest_final.png', dpi=200)\n"
         "plt.close(fig)\n\n"
-        "print('Archivos actualizados en:', BASE_DIR)\n"
-        "print('Gráficos exportados:')\n"
         "for file_name in [\n"
         "    'grafica_distribucion_clases.png',\n"
         "    'graficas_distribucion_variables_continuas.png',\n"
@@ -649,20 +643,6 @@ cells.append(
         "    'confusion_matrix_random_forest_final.png',\n"
         "]:\n"
         "    print(BASE_DIR / file_name)"
-    )
-)
-
-cells.append(
-    md(
-        "## 13. Observaciones para Overleaf\n\n"
-        "- Incluir una figura con la **distribución de clases**.\n"
-        "- Incluir una figura con la **matriz de correlación**.\n"
-        "- Incluir una tabla con la **búsqueda de hiperparámetros del MLP**.\n"
-        "- Incluir una tabla comparativa entre **MLP principal** y **Random Forest**.\n"
-        "- Incluir las **matrices de confusión normalizadas** de ambos modelos.\n"
-        "- Incluir una figura con la **importancia de variables** del Random Forest.\n"
-        "- En la discusión, destacar que el `Random Forest` superó al MLP en este problema tabular.\n"
-        "- Justificar el modelo adicional con literatura relacionada de predicción de rendimiento académico y deserción."
     )
 )
 
