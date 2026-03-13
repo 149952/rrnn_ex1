@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+ENV/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data / outputs (ajusta según convenga)
+*.ckpt
+*.pt
+*.pth
+*.h5
+*.pkl
+*.joblib
+logs/
+outputs/
+
+# OS
+.DS_Store
+Thumbs.db
