@@ -1,0 +1,5 @@
+scenario,best_config,accuracy,precision_macro,recall_macro,f1_macro
+con_gpa,"{'batch_size': 32, 'epochs': 50, 'learning_rate': 0.0001, 'optimizer': 'adam'}",0.8607,0.827,0.7405,0.7643
+con_gpa_smote,"{'batch_size': 128, 'epochs': 150, 'learning_rate': 0.001, 'optimizer': 'sgd'}",0.8524,0.7486,0.7377,0.7404
+sin_gpa_smote,"{'batch_size': 32, 'epochs': 50, 'learning_rate': 0.0005, 'optimizer': 'rmsprop'}",0.7326,0.6375,0.6077,0.6044
+sin_gpa,"{'batch_size': 64, 'epochs': 50, 'learning_rate': 0.0001, 'optimizer': 'adam'}",0.7437,0.6189,0.5823,0.5906

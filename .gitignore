@@ -29,3 +29,6 @@ outputs/
 # OS
 .DS_Store
 Thumbs.db
+
+# macOS resource forks
+._*
