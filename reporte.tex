@@ -82,7 +82,7 @@ La capa de entrada se ajustó al número de atributos y la capa de salida al nú
 Como modelo comparativo se utilizó \textit{Random Forest}. Se exploraron distintas combinaciones de número de árboles, profundidad máxima, peso por clase y tamaño mínimo de hoja. Su inclusión respondió a dos motivos: respaldo en la literatura y desempeño esperado en datos tabulares.
 
 \section{Resultados}
-La Figura~\ref{fig:clases} muestra la distribución de clases del conjunto de datos. Se observa un desbalance claro, con predominio de la clase 4. La Figura~\ref{fig:corr} presenta la matriz de correlación, donde destaca la relación entre \texttt{Absences}, \texttt{GPA} y \texttt{GradeClass}.
+En esta sección no solo se reportan métricas finales, sino también evidencias visuales que permiten comprender mejor el comportamiento de los datos y de los modelos. Desde una perspectiva didáctica, estas figuras son importantes porque muestran cómo se distribuye la información, qué variables parecen más influyentes, cómo evolucionó el entrenamiento del MLP y en qué clases se equivocan los modelos.
 
 \begin{figure}[H]
 \centering
@@ -91,12 +91,16 @@ La Figura~\ref{fig:clases} muestra la distribución de clases del conjunto de da
 \label{fig:clases}
 \end{figure}
 
+La Figura~\ref{fig:clases} sirve para identificar si el problema está balanceado o desbalanceado. Este punto es fundamental porque un modelo puede aparentar buen desempeño si favorece a la clase más frecuente. En este caso se observa un predominio marcado de la clase 4, mientras que la clase 0 es claramente minoritaria. Esta distribución ayuda a explicar por qué las clases extremas resultan más difíciles de clasificar y por qué las métricas macro son necesarias para complementar la exactitud global.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\linewidth]{graficas_distribucion_variables_continuas.png}
 \caption{Distribución de las variables continuas utilizadas en el estudio.}
 \label{fig:continuas}
 \end{figure}
+
+La Figura~\ref{fig:continuas} permite analizar la forma de las distribuciones de las variables continuas. Este tipo de gráfica es útil para detectar asimetrías, concentraciones, rangos efectivos y posibles valores extremos. En particular, se aprecia que la edad tiene un rango muy acotado, mientras que el tiempo de estudio semanal, las ausencias y el promedio general presentan variaciones más amplias. Esto sugiere que no todas las variables aportan la misma cantidad de información discriminativa al modelo.
 
 \begin{figure}[H]
 \centering
@@ -105,12 +109,16 @@ La Figura~\ref{fig:clases} muestra la distribución de clases del conjunto de da
 \label{fig:corr}
 \end{figure}
 
+La Figura~\ref{fig:corr} resume la relación lineal entre pares de variables. Su utilidad radica en identificar atributos asociados entre sí y detectar cuáles se vinculan con la variable objetivo. En este caso destacan dos observaciones: las ausencias guardan una relación positiva importante con la clase de calificación, mientras que el promedio general presenta una relación inversa marcada con \texttt{GradeClass}. Esto es coherente con la semántica del problema: a menor desempeño académico, mayor clase numérica; además, un mayor número de ausencias suele relacionarse con peores resultados escolares.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\linewidth]{boxplots_variables_por_clase.png}
 \caption{Distribución de variables continuas por clase mediante diagramas de caja.}
 \label{fig:boxplots}
 \end{figure}
+
+La Figura~\ref{fig:boxplots} permite comparar las variables continuas entre clases. A diferencia de un histograma global, aquí se observa cómo cambian la mediana, la dispersión y los valores atípicos en cada clase. Esta figura tiene especial valor interpretativo porque muestra que las ausencias aumentan conforme empeora la clase de calificación, mientras que el promedio general tiende a disminuir. También se aprecia que la edad presenta un comportamiento bastante estable entre clases, lo cual sugiere una menor capacidad explicativa.
 
 \begin{figure}[H]
 \centering
@@ -119,12 +127,16 @@ La Figura~\ref{fig:clases} muestra la distribución de clases del conjunto de da
 \label{fig:mlp}
 \end{figure}
 
+La Figura~\ref{fig:mlp} representa la arquitectura del modelo principal. Esta visualización es valiosa porque traduce la descripción textual del enunciado en una estructura concreta: una capa de entrada ajustada al número de variables, cuatro capas densas con activación ReLU y \textit{Dropout}(0.2), y una capa de salida con cinco neuronas y activación \textit{softmax}. En un reporte didáctico, esta figura ayuda a que el lector relacione la teoría de las capas con la implementación real del modelo.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_mlp.png}
 \caption{Comparación de hiperparámetros evaluados para el MLP principal.}
 \label{fig:busqueda_mlp}
 \end{figure}
+
+La Figura~\ref{fig:busqueda_mlp} documenta la búsqueda de hiperparámetros del MLP. Su propósito es mostrar que el modelo final no se eligió de manera arbitraria, sino a partir de una exploración sistemática de configuraciones. En este caso se compararon tamaños de lote, épocas, tasas de aprendizaje y optimizadores. La mejor configuración fue \texttt{Adam}, tasa de aprendizaje de 0.0001, tamaño de lote de 32 y 50 épocas, lo que permitió alcanzar un equilibrio adecuado entre desempeño y estabilidad.
 
 \begin{figure}[H]
 \centering
@@ -133,12 +145,16 @@ La Figura~\ref{fig:clases} muestra la distribución de clases del conjunto de da
 \label{fig:curvas_mlp}
 \end{figure}
 
+La Figura~\ref{fig:curvas_mlp} muestra la evolución del aprendizaje del MLP. Estas curvas son especialmente importantes en redes neuronales porque permiten diagnosticar problemas como sobreajuste, subajuste o inestabilidad. En la gráfica de pérdida se observa una disminución consistente tanto en entrenamiento como en validación. En la gráfica de exactitud también se aprecia una mejora sostenida. La proximidad entre ambas curvas sugiere que el modelo aprendió de manera estable y que la regularización mediante \textit{Dropout} ayudó a controlar el sobreajuste.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_random_forest.png}
 \caption{Comparación de hiperparámetros evaluados para Random Forest.}
 \label{fig:busqueda_rf}
 \end{figure}
+
+La Figura~\ref{fig:busqueda_rf} cumple una función análoga para el modelo comparativo. Aquí se exploran combinaciones de número de árboles, profundidad, tamaño mínimo de hoja y pesos por clase. Esta comparación es relevante porque muestra que el mejor \textit{Random Forest} no se tomó por defecto, sino tras evaluar varias configuraciones posibles. El resultado final confirma que este modelo se adapta muy bien a datos tabulares con relaciones no lineales.
 
 \begin{table}[H]
 \centering
@@ -157,6 +173,8 @@ Random Forest & 0.9331 & 0.9147 & 0.8363 & 0.8604 \\
 \label{tab:comparacion}
 \end{table}
 
+La Tabla~\ref{tab:comparacion} concentra la comparación cuantitativa principal del estudio. Su valor radica en resumir, de forma directa, qué modelo funcionó mejor y en qué magnitud. El MLP principal logró una exactitud de 0.8607 y un puntaje F1 macro de 0.7643, lo que constituye un resultado sólido y consistente con la arquitectura exigida. No obstante, \textit{Random Forest} alcanzó 0.9331 de exactitud y 0.8604 de puntaje F1 macro, superando al MLP en todas las métricas globales consideradas.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\linewidth]{matrices_confusion_comparadas.png}
@@ -164,12 +182,16 @@ Random Forest & 0.9331 & 0.9147 & 0.8363 & 0.8604 \\
 \label{fig:confusiones}
 \end{figure}
 
+La Figura~\ref{fig:confusiones} es una de las evidencias más valiosas del reporte, porque permite observar en qué clases se equivoca cada modelo. Mientras la exactitud resume el resultado global, la matriz de confusión revela la estructura de los errores. En ambas matrices se aprecia que la clase 4 es la mejor reconocida, lo cual está relacionado tanto con su mayor frecuencia como con la señal que contiene \texttt{GPA}. También se observa que la clase 0 sigue siendo la más difícil, aunque \textit{Random Forest} la maneja mejor que el MLP. Esta figura permite afirmar, con evidencia, que el segundo modelo no solo mejora el promedio general, sino también la identificación por clase.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\linewidth]{comparacion_metricas_modelos.png}
 \caption{Comparación de métricas entre modelos.}
 \label{fig:metricas}
 \end{figure}
+
+La Figura~\ref{fig:metricas} facilita una lectura rápida y comparativa del rendimiento. Su utilidad didáctica consiste en hacer visible que no basta con una sola métrica. Por ejemplo, un modelo puede tener alta exactitud pero menor sensibilidad promedio entre clases. En este caso, la figura confirma de manera visual la ventaja de \textit{Random Forest} sobre el MLP en exactitud, precisión macro, sensibilidad macro y puntaje F1 macro.
 
 \begin{figure}[H]
 \centering
@@ -188,22 +210,24 @@ Random Forest & 0.9331 & 0.9147 & 0.8363 & 0.8604 \\
 Variable & Importancia \\
 \midrule
 GPA & 0.4864 \\
-Absences & 0.2076 \\
-StudyTimeWeekly & 0.0904 \\
-ParentalSupport & 0.0437 \\
-Age & 0.0311 \\
-Ethnicity & 0.0285 \\
-ParentalEducation & 0.0281 \\
+ausencias & 0.2076 \\
+tiempo de estudio semanal & 0.0904 \\
+apoyo parental & 0.0437 \\
+edad & 0.0311 \\
+grupo étnico & 0.0285 \\
+educación parental & 0.0281 \\
 \bottomrule
 \end{tabular}
 \normalsize
 \label{tab:importancia}
 \end{table}
 
+La Figura~\ref{fig:importancia} y la Tabla~\ref{tab:importancia} cumplen una función interpretativa esencial: mostrar qué atributos contribuyen más a la decisión del modelo. Este tipo de análisis es especialmente valioso cuando se quiere comunicar resultados a una audiencia educativa, porque traduce el funcionamiento interno del modelo en factores comprensibles. En este caso, el promedio general (\texttt{GPA}) aparece como la variable más influyente, seguido por las ausencias y el tiempo de estudio semanal. Esto sugiere que el modelo está aprendiendo relaciones coherentes con la realidad académica: el desempeño final depende de forma importante del historial de calificaciones y de hábitos directamente relacionados con la dedicación escolar.
+
 \section{Discusión}
 El MLP principal alcanzó una exactitud de 0.8607, lo que confirma que la arquitectura exigida por el enunciado es capaz de obtener un desempeño competitivo en este problema. La búsqueda de hiperparámetros mostró que la mejor configuración fue \texttt{Adam}, tasa de aprendizaje de 0.0001, tamaño de lote de 32 y 50 épocas.
 
-Las Figuras~\ref{fig:continuas} y~\ref{fig:boxplots} aportan información descriptiva útil para interpretar el problema. La variable \texttt{Absences} muestra una variación clara entre clases, mientras que \texttt{GPA} presenta una separación más marcada del comportamiento de las categorías, lo cual es consistente con su alta capacidad explicativa. De igual manera, la Figura~\ref{fig:curvas_mlp} evidencia una convergencia estable del MLP sin señales severas de inestabilidad entre entrenamiento y validación.
+Las Figuras~\ref{fig:continuas} y~\ref{fig:boxplots} aportan información descriptiva útil para interpretar el problema. La variable \texttt{Absences} muestra una variación clara entre clases, mientras que \texttt{GPA} presenta una separación más marcada del comportamiento de las categorías, lo cual es consistente con su alta capacidad explicativa. De igual manera, la Figura~\ref{fig:curvas_mlp} evidencia una convergencia estable del MLP sin señales severas de inestabilidad entre entrenamiento y validación. Esto es importante desde el punto de vista didáctico, porque muestra que el modelo profundo no solo alcanzó un buen resultado final, sino que además siguió una trayectoria de aprendizaje razonable.
 
 El modelo comparativo \textit{Random Forest} superó al MLP en todas las métricas principales, alcanzando una exactitud de 0.9331 y un puntaje F1 macro de 0.8604. Este resultado es coherente con lo reportado en la literatura para problemas educativos con datos tabulares, donde los métodos de ensamble suelen ofrecer ventajas en interpretabilidad y desempeño.
 

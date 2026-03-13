@@ -587,10 +587,11 @@ cells.append(md("## 11. Importancia de variables con Random Forest"))
 cells.append(
     code(
         "importance_df = pd.DataFrame({'variable': X_train_rf.columns, 'importancia': best_rf_model.feature_importances_}).sort_values('importancia', ascending=False).reset_index(drop=True)\n"
-        "display(importance_df.head(15))\n\n"
+        "importance_df['variable_mostrar'] = importance_df['variable'].map(lambda x: DISPLAY_NAMES.get(x, x))\n"
+        "display(importance_df[['variable_mostrar', 'importancia']].head(15).rename(columns={'variable_mostrar': 'variable'}))\n\n"
         "plt.figure(figsize=(10, 5))\n"
         "top_importance = importance_df.head(12)\n"
-        "sns.barplot(data=top_importance, x='importancia', y='variable', hue='variable', dodge=False, palette='viridis', legend=False)\n"
+        "sns.barplot(data=top_importance, x='importancia', y='variable_mostrar', hue='variable_mostrar', dodge=False, palette='viridis', legend=False)\n"
         "plt.title('Variables más relevantes según Random Forest')\n"
         "plt.xlabel('Importancia')\n"
         "plt.ylabel('Variable')\n"
