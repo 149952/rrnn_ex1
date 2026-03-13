@@ -24,20 +24,9 @@
 \raggedbottom
 
 \begin{abstract}
-En este trabajo se aborda un problema de clasificación supervisada
-para predecir la clase de desempeño académico de estudiantes de
-preparatoria a partir de variables demográficas, hábitos de estudio,
-apoyo parental, actividades extracurriculares y promedio general.
-Se implementó como modelo principal una red neuronal multicapa con
-la arquitectura solicitada en el enunciado y, como modelo comparativo
-adicional, un clasificador \textit{Random Forest} sustentado en
-literatura previa sobre predicción de desempeño académico y deserción
-escolar. Se realizó preprocesamiento, partición estratificada,
-búsqueda de hiperparámetros, evaluación con métricas de clasificación
-y análisis por medio de matrices de confusión normalizadas e
-importancia de variables. Los resultados muestran que ambos modelos
-alcanzan un desempeño competitivo, aunque \textit{Random Forest}
-obtuvo el mejor resultado final sobre el conjunto de prueba.
+Este trabajo aborda un problema de clasificación supervisada para predecir el desempeño académico de estudiantes de preparatoria. Consideramos variables como datos demográficos, hábitos de estudio, apoyo parental, actividades extracurriculares y promedio general. Como modelo principal, implementamos una red neuronal multicapa (MLP) con la arquitectura especificada en el enunciado. Además, usamos un clasificador \textit{Random Forest} como modelo comparativo, basado en literatura previa sobre predicción de desempeño académico y deserción escolar.
+
+El proceso incluyó preprocesamiento de datos, partición estratificada, búsqueda de hiperparámetros y evaluación con métricas de clasificación. También analizamos los resultados usando matrices de confusión normalizadas e importancia de variables. Los resultados indican que ambos modelos lograron un desempeño competitivo, aunque \textit{Random Forest} obtuvo el mejor resultado final en el conjunto de prueba.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -51,7 +40,6 @@ clasificación, MLP, Random Forest, desempeño académico, deserción escolar
 \hyperref[sec:fundamento]{Fundamento},
 \hyperref[sec:metodologia]{Metodología},
 \hyperref[sec:resultados]{Resultados},
-\hyperref[sec:discusion]{Discusión},
 \hyperref[sec:conclusiones]{Conclusiones},
 \hyperref[sec:apendice_temprana]{Apéndice A},
 \hyperref[sec:referencias]{Referencias}.
@@ -59,334 +47,126 @@ clasificación, MLP, Random Forest, desempeño académico, deserción escolar
 
 \section{Introducción}\label{sec:introduccion}
 
-La predicción temprana del desempeño académico es una tarea relevante
-en contextos educativos porque permite identificar estudiantes en
-riesgo y apoyar la toma de decisiones institucionales relacionadas
-con seguimiento académico, tutorías y estrategias de permanencia
-escolar. En particular, la detección oportuna de patrones asociados
-con bajo rendimiento puede contribuir al análisis de factores
-vinculados con rezago y deserción escolar, problema que afecta de
-manera significativa a los sistemas educativos de nivel medio superior.
+Predecir el desempeño académico temprano es crucial en educación para identificar estudiantes en riesgo y apoyar decisiones institucionales como seguimiento, tutorías y estrategias de permanencia. Detectar patrones de bajo rendimiento ayuda a analizar factores de rezago y deserción, problemas importantes en el nivel medio superior.
 
-En este trabajo se utilizó el conjunto de datos \textit{Student
-Performance Dataset}, el cual contiene registros de 2392 estudiantes
-de preparatoria con información demográfica, hábitos de estudio,
-participación parental, actividades extracurriculares y desempeño
-académico. El problema se formuló como clasificación multiclase, donde
-la variable objetivo corresponde a \texttt{GradeClass}, una
-categorización ordinal derivada del promedio general (\texttt{GPA})
-que distingue cinco niveles de desempeño.
+Este estudio usó el \textit{Student Performance Dataset} con registros de 2392 estudiantes de preparatoria, incluyendo datos demográficos, hábitos de estudio, participación parental, actividades extracurriculares y desempeño académico. El problema se planteó como clasificación multiclase, con \texttt{GradeClass} como variable objetivo, una categorización ordinal del promedio general (\texttt{GPA}) en cinco niveles de desempeño.
 
-El objetivo del trabajo fue desarrollar un modelo de red neuronal
-multicapa con la arquitectura indicada y compararlo con un segundo
-modelo seleccionado a partir de literatura académica. El resto del
-documento se organiza de la siguiente manera: la Sección~\ref{sec:relacionado}
-sintetiza los antecedentes relevantes; la Sección~\ref{sec:fundamento}
-presenta el fundamento teórico de los componentes utilizados; la
-Sección~\ref{sec:metodologia} describe el proceso experimental; la
-Sección~\ref{sec:resultados} reporta los resultados obtenidos; la
-Sección~\ref{sec:discusion} los discute; y la
-Sección~\ref{sec:conclusiones} cierra con las conclusiones del estudio.
+El objetivo fue desarrollar un modelo de red neuronal multicapa y compararlo con otro de la literatura. El documento se organiza así: Sección II, antecedentes; Sección III, fundamento teórico; Sección IV, proceso experimental; Sección V, resultados; Sección VI, conclusiones; y Apéndice A, caracterización inicial del estudiante sin información académica previa.
 
 \section{Trabajo relacionado}\label{sec:relacionado}
 
-La predicción del rendimiento académico y de la deserción escolar
-constituye una de las líneas más activas de la minería de datos
-educativa, debido a su potencial para apoyar tutorías, seguimiento
-institucional y estrategias de intervención temprana. En revisiones
-recientes del área se documenta que los problemas de clasificación
-educativa se han abordado con una variedad amplia de métodos,
-incluyendo \textit{Random Forest}, árboles de decisión, máquinas de
-soporte vectorial, \textit{k}-vecinos más cercanos y redes neuronales
-multicapa \cite{review_edm,review_success}.
+Predecir el rendimiento académico y la deserción escolar es una de las áreas más activas de la minería de datos educativa. Esto se debe a su potencial para apoyar tutorías, seguimiento institucional y estrategias de intervención temprana. Revisiones recientes del área muestran que se han usado varios métodos para abordar problemas de clasificación educativa, como \textit{Random Forest}, árboles de decisión, máquinas de soporte vectorial, \textit{k}-vecinos más cercanos y redes neuronales multicapa~\cite{review_edm,review_success}.
 
 \subsection{Redes neuronales para predicción de desempeño}
 
-Islam \textit{et al.}~\cite{ieeeaccess} aplicaron aprendizaje
-profundo para analizar y predecir el desempeño estudiantil a partir
-de un conjunto de datos con características demográficas y académicas.
-Su arquitectura consistió en capas densas con activación ReLU
-intercaladas con capas de regularización, y una capa de salida con
-activación \textit{softmax} para clasificación multiclase. Los autores
-reportaron que una arquitectura densa bien configurada es capaz de
-capturar relaciones no lineales entre atributos educativos, logrando
-métricas de exactitud competitivas frente a métodos clásicos. El
-artículo especifica parámetros de entrenamiento como número de épocas
-y tamaño de lote, y discute el efecto de distintos optimizadores sobre
-la convergencia del modelo.
+Islam \textit{et al.}~\cite{ieeeaccess} usaron aprendizaje profundo para analizar y predecir el desempeño estudiantil basándose en un conjunto de datos con características demográficas y académicas. Su arquitectura incluyó capas densas con activación ReLU intercaladas con capas de regularización, y una capa de salida con activación \textit{softmax} para clasificación multiclase. Los autores demostraron que una arquitectura densa bien configurada puede capturar relaciones no lineales entre atributos educativos, logrando métricas de exactitud competitivas en comparación con métodos tradicionales.
+
+El artículo especifica parámetros de entrenamiento como número de épocas y tamaño de lote, y discute el efecto de distintos optimizadores sobre la convergencia del modelo.
 
 \subsection{Métodos de ensamble en contextos educativos}
 
-Rizk y El-Bakry~\cite{rf_algorithms} aplicaron árboles de decisión
-y \textit{Random Forest} para predecir el desempeño de estudiantes de
-primer ingreso universitario. Sus experimentos mostraron que
-\textit{Random Forest} superó a los árboles individuales en exactitud
-y estabilidad, y que el modelo permitió identificar variables con alta
-contribución al rendimiento, como antecedentes familiares y
-calificaciones previas.
+Rizk y El-Bakry~\cite{rf_algorithms} emplearon árboles de decisión y \textit{Random Forest} para predecir el desempeño de estudiantes de primer ingreso universitario. Sus experimentos revelaron que \textit{Random Forest} superó a los árboles individuales en exactitud y estabilidad. Además, el modelo permitió identificar variables con alta contribución al rendimiento, como antecedentes familiares y calificaciones previas.
 
-Costa e Silva \textit{et al.}~\cite{rf_dropout_review} realizaron
-una comparación de algoritmos supervisados para predecir permanencia
-y abandono en educación superior. Entre los clasificadores evaluados,
-los métodos de ensamble mostraron resultados robustos frente a datos
-educativos heterogéneos, con menor sensibilidad al desbalance de clases
-que los clasificadores individuales.
+Costa e Silva \textit{et al.}~\cite{rf_dropout_review} compararon varios algoritmos supervisados para predecir la permanencia y el abandono en educación superior. Entre los clasificadores evaluados, los métodos de ensamble demostraron resultados robustos frente a datos educativos heterogéneos, mostrando menor sensibilidad al desbalance de clases en comparación con los clasificadores individuales.
 
-Ahad \textit{et al.}~\cite{rf_mooc} aplicaron \textit{Random Forest}
-a la predicción de abandono en cursos MOOC, reportando que el modelo
-ofrece capacidad predictiva estable y facilita el análisis interpretativo
-mediante la estimación de importancia de variables. Su estudio destaca
-que la identificación de factores de riesgo es tan relevante como la
-métrica de exactitud en aplicaciones educativas.
+Ahad \textit{et al.}~\cite{rf_mooc} aplicaron \textit{Random Forest} para predecir el abandono en cursos MOOC. Su estudio reportó que el modelo ofrece una capacidad predictiva estable y facilita el análisis interpretativo mediante la estimación de la importancia de las variables. Ahad \textit{et al.} enfatizan que la identificación de factores de riesgo es tan relevante como la métrica de exactitud en aplicaciones educativas.
 
-Altabraweh \textit{et al.}~\cite{rf_advising} utilizaron
-\textit{Random Forest} con el objetivo explícito de mejorar la asesoría
-académica, demostrando que la predicción temprana del desempeño puede
-orientar acciones preventivas y personalizar el seguimiento
-institucional. Su trabajo vincula directamente los resultados del
-modelo con decisiones de intervención, lo que lo hace especialmente
-relevante en contextos de riesgo de deserción.
+Altabraweh \textit{et al.}~\cite{rf_advising} utilizaron \textit{Random Forest} con el objetivo explícito de mejorar la asesoría académica. Demostraron que la predicción temprana del desempeño puede orientar acciones preventivas y personalizar el seguimiento institucional. Su trabajo vincula directamente los resultados del modelo con decisiones de intervención, lo que lo hace especialmente relevante en contextos de riesgo de deserción.
 
 \section{Fundamento}\label{sec:fundamento}
 
 \subsection{Red neuronal multicapa y capas densas}
 
-Una red neuronal multicapa (\textit{MLP}, por sus siglas en inglés)
-está compuesta por una capa de entrada, una o más capas ocultas y
-una capa de salida, conectadas de forma densa entre sí. Cada capa
-densa realiza una transformación afín sobre su vector de entrada y
-aplica una función de activación no lineal. Esta estructura permite
-al modelo aprender representaciones jerárquicas de los datos,
-capturando tanto relaciones lineales como no lineales entre atributos.
+Una red neuronal multicapa (MLP, por sus siglas en inglés) consta de una capa de entrada, una o más capas ocultas y una capa de salida, todas conectadas densamente entre sí. Cada capa densa transforma su vector de entrada mediante una transformación afín y luego aplica una función de activación no lineal. Esta arquitectura permite al modelo aprender representaciones jerárquicas de los datos, capturando tanto relaciones lineales como no lineales entre atributos.
 
-En este trabajo se empleó la función de activación ReLU
-(\textit{Rectified Linear Unit}) en todas las capas ocultas. ReLU
-devuelve el valor de entrada si es positivo y cero en caso contrario,
-lo que introduce no linealidad de manera computacionalmente eficiente
-y mitiga el problema del desvanecimiento del gradiente presente en
-funciones como la sigmoide o la tangente hiperbólica.
+En este trabajo, se utilizó la función de activación ReLU (\textit{Rectified Linear Unit}) en todas las capas ocultas. ReLU devuelve el valor de entrada si es positivo y cero si es negativo. Esta función introduce no linealidad de manera computacionalmente eficiente y ayuda a mitigar el problema del desvanecimiento del gradiente, que es común con funciones de activación como la sigmoide o la tangente hiperbólica.
 
 \subsection{Dropout}
 
-La técnica \textit{Dropout}~\cite{dropout} consiste en desactivar
-aleatoriamente una fracción de neuronas durante cada paso de
-entrenamiento. Al forzar al modelo a aprender representaciones
-distribuidas, se reduce la coadaptación excesiva entre neuronas y
-se mejora la capacidad de generalización. En este trabajo se aplicó
-\textit{Dropout} con tasa de 0.2 después de cada capa oculta,
-siguiendo la arquitectura especificada en el enunciado.
+La técnica \textit{Dropout}~\cite{dropout} desactiva aleatoriamente una fracción de neuronas durante cada paso de entrenamiento. Esto obliga al modelo a aprender representaciones distribuidas, reduciendo la coadaptación excesiva entre neuronas y mejorando su capacidad de generalización. En este trabajo, aplicamos \textit{Dropout} con una tasa de 0.2 después de cada capa oculta, siguiendo la arquitectura especificada en el enunciado.
 
 \subsection{Softmax}
 
-La función \textit{softmax} transforma el vector de salidas de la
-última capa oculta en una distribución de probabilidad sobre las
-clases disponibles. Formalmente, para un vector de logits
-$\mathbf{z} \in \mathbb{R}^K$, la probabilidad asignada a la clase
-$k$ es:
+La función \textit{softmax} transforma el vector de salidas de la última capa oculta en una distribución de probabilidad sobre las clases disponibles. Formalmente, para un vector de logits $\mathbf{z} \in \mathbb{R}^K$, la probabilidad asignada a la clase $k$ es:
 \begin{equation}
   p_k = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}
 \end{equation}
-La clase predicha corresponde al índice con mayor probabilidad
-estimada. Esta función es estándar en clasificación multiclase y
-es coherente con el uso de entropía cruzada categórica como función
-de pérdida durante el entrenamiento.
+
+En clasificación multiclase, la clase predicha es la que tiene la mayor probabilidad estimada. Esta función es estándar y coincide con el uso de entropía cruzada categórica como función de pérdida durante el entrenamiento.
 
 \subsection{Random Forest}
 
-\textit{Random Forest} es un método de ensamble que entrena un
-conjunto de árboles de decisión sobre subconjuntos aleatorios de datos
-(\textit{bootstrap}) y subconjuntos aleatorios de atributos en cada
-nodo de división. La predicción final se obtiene mediante votación
-por mayoría entre los árboles del ensamble. Este mecanismo reduce la
-varianza del modelo respecto a un árbol individual, mejora la
-robustez frente al ruido y suele proporcionar alto desempeño en datos
-tabulares. Adicionalmente, \textit{Random Forest} permite estimar la
-importancia de variables a partir de la reducción media de impureza
-de Gini a lo largo de todos los árboles.
+\textit{Random Forest} es una técnica de ensamble que entrena múltiples árboles de decisión sobre subconjuntos aleatorios de datos (\textit{bootstrap}) y subconjuntos aleatorios de atributos en cada nodo de división. La predicción final se determina mediante votación por mayoría entre los árboles del ensamble. Este enfoque reduce la varianza del modelo en comparación con un árbol individual, mejora su robustez frente al ruido y generalmente ofrece un alto desempeño en datos tabulares. Además, \textit{Random Forest} permite estimar la importancia de las variables calculando la reducción media de impureza de Gini a lo largo de todos los árboles.
 
 \subsection{Métricas de evaluación}
 
-La exactitud (\textit{accuracy}) mide la proporción de predicciones
-correctas sobre el total de muestras. Sin embargo, en problemas con
-clases desbalanceadas puede ser engañosa, ya que un modelo que
-predice siempre la clase mayoritaria puede obtener exactitud alta.
-Por esta razón se utilizaron métricas macro, que calculan el promedio
-no ponderado de cada clase:
+Para medir el desempeño de los modelos, la referencia inmediata es ver el valor de exactitud (\textit{accuracy}), que mide la proporción de predicciones correctas sobre el total de muestras. Sin embargo, en problemas con clases desbalanceadas puede ser engañosa. Un modelo que predice siempre la clase mayoritaria puede obtener una exactitud alta, pero no necesariamente es un buen modelo. Por lo tanto, se utilizan métricas macro, que calculan el promedio no ponderado de cada clase.
 
 \begin{itemize}
-  \item \textbf{Precisión macro}: promedio de la precisión por clase,
-    donde la precisión de una clase es la fracción de predicciones
-    positivas que son correctas.
-  \item \textbf{Sensibilidad macro} (\textit{recall}): promedio de la
-    sensibilidad por clase, que mide qué fracción de los ejemplos
-    reales de cada clase fue correctamente identificada.
-  \item \textbf{Puntaje F1 macro}: media armónica entre precisión y
-    sensibilidad macro, que penaliza desequilibrios entre ambas.
+  \item \textbf{Precisión macro}: promedio de la precisión por clase, donde la precisión de una clase es la fracción de predicciones positivas que son correctas.
+  \item \textbf{Sensibilidad macro} (\textit{recall}): promedio de la sensibilidad por clase, que mide qué fracción de los ejemplos reales de cada clase fue correctamente identificada.
+  \item \textbf{Puntaje F1 macro}: media armónica entre precisión y sensibilidad macro, que penaliza desequilibrios entre ambas.
 \end{itemize}
 
-Las métricas macro otorgan el mismo peso a cada clase independientemente
-de su frecuencia, lo que las hace más informativas que la exactitud
-global cuando el conjunto de datos está desbalanceado, como ocurre
-en este problema.
+Las métricas macro otorgan el mismo peso a cada clase, independientemente de su frecuencia. Esto las hace más informativas que la exactitud global cuando el conjunto de datos está desbalanceado, como en este problema.
 
 \section{Metodología}\label{sec:metodologia}
 
 \subsection{Conjunto de datos y preprocesamiento}
 
-Se utilizó el conjunto de datos \textit{Student Performance Dataset},
-compuesto por 2392 registros y 15 columnas. Las variables incluyen
-edad, género, etnicidad, educación parental, tiempo de estudio
-semanal, ausencias, tutorías, apoyo parental, actividades
-extracurriculares, deportes, música, voluntariado, promedio general
-y clase de desempeño académico.
+Para este análisis, se utilizó el \textit{Student Performance Dataset}, que contiene 2392 registros y 15 columnas. Las variables incluyen edad, género, etnicidad, educación de los padres, tiempo de estudio semanal, ausencias, tutorías, apoyo de los padres, actividades extracurriculares, deportes, música, voluntariado, promedio general y clase de desempeño académico.
 
-Como parte del preprocesamiento se verificó la integridad del archivo,
-se confirmó la ausencia de valores nulos y se eliminaron atributos sin
-valor predictivo directo, como \texttt{StudentID}. Las variables
-categóricas ya se encontraban codificadas numéricamente en el dataset,
-por lo que no fue necesaria una transformación adicional. Dado que el
-enunciado no prohíbe explícitamente el uso de \texttt{GPA}, se decidió
-trabajar con el conjunto completo de atributos para el escenario
-principal del reporte.
+Como parte del preprocesamiento, verificamos la integridad del archivo y confirmamos que no había valores nulos. También eliminamos atributos que no tenían un valor predictivo directo, como \texttt{StudentID}. Las variables categóricas ya estaban codificadas numéricamente en el conjunto de datos, por lo que no fue necesario realizar ninguna transformación adicional. Dado que el enunciado no prohíbe explícitamente el uso de \texttt{GPA}, decidimos trabajar con el conjunto completo de atributos para el escenario principal del reporte.
 
 \subsection{Partición estratificada}
 
-Los datos se dividieron en tres subconjuntos: entrenamiento (70\%),
-validación (15\%) y prueba (15\%), mediante partición estratificada
-que preserva la proporción de clases en cada subconjunto. Esta
-decisión es metodológicamente relevante porque el conjunto presenta
-desbalance marcado: la clase~4 concentra 1211 muestras mientras que
-la clase~0 contiene únicamente 107. Una partición no estratificada
-podría producir subconjuntos con proporciones de clases
-significativamente distintas a las del dataset original, afectando
-tanto el entrenamiento como la evaluación.
+Los datos se dividieron en tres subconjuntos: entrenamiento (70\%), validación (15\%) y prueba (15\%). Esta partición estratificada preserva la proporción de clases en cada subconjunto, lo cual es crucial dado el desbalance marcado en el conjunto de datos. La clase~4 tiene 1211 muestras, mientras que la clase~0 solo tiene 107. Una partición no estratificada podría resultar en subconjuntos con proporciones de clases significativamente diferentes a las del conjunto de datos original, afectando tanto el entrenamiento como la evaluación.
 
-La búsqueda de hiperparámetros se realizó utilizando el subconjunto
-de validación como criterio de selección, y la evaluación final de
-cada modelo se reporta exclusivamente sobre el subconjunto de prueba,
-que no participó en ninguna etapa de ajuste.
+La búsqueda de hiperparámetros se realizó utilizando el subconjunto de validación como criterio de selección. La evaluación final de cada modelo se reporta exclusivamente sobre el subconjunto de prueba, que no participó en ninguna etapa de ajuste.
 
 \subsection{Selección de modelos}
 
-La elección de los dos modelos evaluados en este trabajo responde a
-criterios distintos pero complementarios.
+La elección de los dos modelos evaluados en este trabajo se basa en criterios distintos pero complementarios. El modelo principal, una red neuronal multicapa (MLP), se seleccionó como condición inicial del proyecto. Su arquitectura específica se basó en el trabajo de Islam \textit{et al.}~\cite{ieeeaccess}, adaptando la capa de entrada al número de atributos del dataset actual y la capa de salida al número de clases del problema.
 
-El modelo principal, una red neuronal multicapa, fue determinado por
-el enunciado del problema. Su arquitectura específica se tomó como
-referencia del trabajo de Islam \textit{et al.}~\cite{ieeeaccess},
-adaptando la capa de entrada al número de atributos del dataset
-actual y la capa de salida al número de clases del problema.
-
-La selección de \textit{Random Forest} como modelo comparativo
-responde a una convergencia de evidencia en la literatura. Rizk y
-El-Bakry~\cite{rf_algorithms} y Altabraweh \textit{et
-al.}~\cite{rf_advising} demostraron su efectividad en problemas de
-predicción de desempeño estudiantil con datos tabulares de naturaleza
-similar al dataset utilizado. Costa e Silva \textit{et
-al.}~\cite{rf_dropout_review} y Ahad \textit{et al.}~\cite{rf_mooc}
-mostraron su robustez en problemas de deserción y abandono escolar.
-Adicionalmente, \textit{Random Forest} ofrece estimación directa de
-importancia de variables, lo cual permite enriquecer el análisis
-interpretativo más allá de las métricas de clasificación.
+Por otro lado, la selección de \textit{Random Forest} como modelo comparativo se debe a la evidencia convergente en la literatura. Rizk y El-Bakry~\cite{rf_algorithms} y Altabraweh \textit{et al.}~\cite{rf_advising} demostraron su efectividad en problemas de predicción de desempeño estudiantil con datos tabulares similares al dataset utilizado. Además, Costa e Silva \textit{et al.}~\cite{rf_dropout_review} y Ahad \textit{et al.}~\cite{rf_mooc} mostraron su robustez en problemas de deserción y abandono escolar. Adicionalmente, \textit{Random Forest} ofrece estimación directa de importancia de variables, lo que permite enriquecer el análisis interpretativo más allá de las métricas de clasificación.
 
 \subsection{Arquitectura MLP principal}
 
-El modelo principal fue una red neuronal multicapa con la siguiente
-arquitectura en sus capas ocultas:
+El modelo principal fue una red neuronal multicapa con una arquitectura específica para sus capas ocultas.
 
-\begin{itemize}
-  \item capa oculta 1: 200 neuronas, activación ReLU;
-  \item \textit{Dropout} con tasa 0.2;
-  \item capa oculta 2: 200 neuronas, activación ReLU;
-  \item \textit{Dropout} con tasa 0.2;
-  \item capa oculta 3: 150 neuronas, activación ReLU;
-  \item \textit{Dropout} con tasa 0.2;
-  \item capa oculta 4: 200 neuronas, activación ReLU;
-  \item \textit{Dropout} con tasa 0.2.
-\end{itemize}
+La primera capa oculta constaba de 200 neuronas con activación ReLU, seguida de una capa de \textit{Dropout} con una tasa de 0.2. La segunda capa oculta también tenía 200 neuronas con activación ReLU y una capa de \textit{Dropout} con una tasa de 0.2. La tercera capa oculta contenía 150 neuronas con activación ReLU y una capa de \textit{Dropout} con una tasa de 0.2. La cuarta capa oculta tenía 200 neuronas con activación ReLU y una capa de \textit{Dropout} con una tasa de 0.2.
 
-La capa de entrada se ajustó al número de atributos del dataset y la
-capa de salida al número de clases, con activación \textit{softmax}.
-Se utilizó entropía cruzada categórica como función de pérdida.
+La capa de entrada se ajustó para adaptarse al número de atributos del dataset, mientras que la capa de salida se ajustó para adaptarse al número de clases, utilizando activación \textit{softmax}. La función de pérdida utilizada fue entropía cruzada categórica.
 
 \subsection{Búsqueda de hiperparámetros --- MLP}
 
-Se realizó búsqueda exhaustiva de hiperparámetros evaluando 81
-configuraciones, resultantes de combinar tres optimizadores
-(\texttt{Adam}, \texttt{RMSprop} y \texttt{SGD}), tres tasas de
-aprendizaje (0.0001, 0.0005 y 0.001), tres tamaños de lote (32, 64
-y 128) y tres valores de épocas máximas (50, 100 y 150). Se empleó
-detención temprana para evitar sobreajuste, con lo que las épocas
-realmente ejecutadas (5585) fueron inferiores al presupuesto teórico
-(8100).
+Se llevó a cabo una búsqueda exhaustiva de hiperparámetros, evaluando 81 configuraciones distintas. Estas configuraciones resultaron de combinar tres optimizadores (\texttt{Adam}, \texttt{RMSprop} y \texttt{SGD}), tres tasas de aprendizaje (0.0001, 0.0005 y 0.001), tres tamaños de lote (32, 64 y 128) y tres valores de épocas máximas (50, 100 y 150). Para evitar el sobreajuste, se implementó la detención temprana, lo que resultó en un número real de épocas ejecutadas (5585) menor al presupuesto teórico (8100).
 
-La tasa de aprendizaje fue el hiperparámetro más sensible del
-experimento, ya que controla el tamaño de los ajustes realizados sobre
-los pesos en cada iteración. Una tasa excesivamente alta puede generar
-inestabilidad; una demasiado baja puede hacer que el modelo converja
-lentamente o quede atrapado en soluciones subóptimas. La configuración
-ganadora fue \texttt{Adam} con tasa de aprendizaje de 0.0001, tamaño
-de lote de 32 y 50 épocas, lo que produjo el mejor equilibrio entre
-desempeño y estabilidad de entrenamiento.
+Entre los hiperparámetros evaluados, la tasa de aprendizaje resultó ser el más sensible. Esto se debe a que controla el tamaño de los ajustes realizados sobre los pesos del modelo en cada iteración. Una tasa de aprendizaje excesivamente alta puede provocar inestabilidad en el entrenamiento, mientras que una tasa demasiado baja puede llevar a una convergencia lenta o incluso a que el modelo quede atrapado en soluciones subóptimas.
+
+La configuración ganadora, que logró el mejor equilibrio entre desempeño y estabilidad de entrenamiento, fue \texttt{Adam} con una tasa de aprendizaje de 0.0001, un tamaño de lote de 32 y 50 épocas.
 
 \subsection{Modelo comparativo y búsqueda de hiperparámetros}
 
-Para \textit{Random Forest} se evaluaron 108 combinaciones de
-hiperparámetros, variando número de árboles (200, 400 y 700),
-profundidad máxima (10, 20, 30 o sin límite), peso por clase
-(\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}) y
-tamaño mínimo de hoja (1, 2 y 4). El criterio de selección fue el
-puntaje F1 macro sobre el subconjunto de validación.
+Para \textit{Random Forest} se evaluaron 108 combinaciones de hiperparámetros, variando número de árboles (200, 400 y 700), profundidad máxima (10, 20, 30 o sin límite), peso por clase (\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}) y tamaño mínimo de hoja (1, 2 y 4). El criterio de selección fue el puntaje F1 macro sobre el subconjunto de validación.
 
 \subsection{Recursos de cómputo y software}
 
-Los experimentos se ejecutaron en Ubuntu Linux 6.17 con Python 3.12.3 y CUDA 13.0. Se utilizó TensorFlow/Keras para el MLP y scikit-learn para Random Forest. El análisis y las visualizaciones se complementaron con \textit{NumPy}, \textit{pandas}, \textit{matplotlib} y \textit{seaborn}. Esta combinación permitió cubrir todo el flujo de trabajo: inspección de datos, preprocesamiento, búsqueda de hiperparámetros, entrenamiento, evaluación y generación de figuras.
+Los experimentos se realizaron en Ubuntu Linux 6.17 con Python 3.12.3 y CUDA 13.0. Para el MLP se usó TensorFlow/Keras, y para \textit{Random Forest}, scikit-learn. Para el análisis y las visualizaciones se complementaron con NumPy, pandas, matplotlib y seaborn. Esta combinación cubrió todo el flujo de trabajo: inspección de datos, preprocesamiento, búsqueda de hiperparámetros, entrenamiento, evaluación y generación de figuras.
 
 \subsection{Costo computacional}
 
-Aunque la rúbrica se concentra en resultados, el costo computacional
-también es relevante para entender el proceso experimental. En la
-búsqueda final del MLP se evaluaron 81 configuraciones distintas,
-resultantes de combinar tres optimizadores (\texttt{Adam},
-\texttt{RMSprop} y \texttt{SGD}), tres tamaños de lote (32, 64 y 128),
-tres tasas de aprendizaje (0.0001, 0.0005 y 0.001) y tres valores de
-épocas máximas (50, 100 y 150). La cifra de 8100 épocas corresponde
-al presupuesto teórico total de entrenamiento obtenido al sumar las
-épocas solicitadas de esas 81 corridas. Por su parte, la cifra de
-5585 épocas corresponde a la suma de la columna \texttt{epochs\_ran}
-registrada en el archivo de resultados de hiperparámetros, es decir,
-a las épocas que realmente se ejecutaron antes de detener cada
-corrida. Esta diferencia se debe al uso de detención temprana, que
-evitó agotar el máximo permitido en varias configuraciones.
+El costo computacional juega un papel importante en la comprensión del proceso experimental. Se evaluaron 81 configuraciones de MLP combinando tres optimizadores (\texttt{Adam}, \texttt{RMSprop} y \texttt{SGD}), tres tamaños de lote (32, 64 y 128), tres tasas de aprendizaje (0.0001, 0.0005 y 0.001) y tres épocas máximas (50, 100 y 150). Aunque el presupuesto teórico total de entrenamiento era de 8100 épocas, la detención temprana resultó en la ejecución de solo 5585 épocas.
 
-En el caso de \textit{Random Forest} se evaluaron 108 combinaciones de
-hiperparámetros, variando números de árboles de 200, 400 y 700;
-profundidades máximas de 10, 20, 30 o sin límite; pesos por clase
-\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}; y
-tamaños mínimos de hoja de 1, 2 y 4. Documentar este costo es
-importante porque muestra que el resultado final no provino de una
-sola corrida afortunada, sino de una exploración computacional amplia.
+Para \textit{Random Forest}, se evaluaron 108 combinaciones de hiperparámetros, incluyendo números de árboles (200, 400 y 700), profundidades máximas (10, 20, 30 o sin límite), pesos por clase (\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}) y tamaños mínimos de hoja (1, 2 y 4). Documentar este costo computacional subraya que el resultado final no fue producto del azar, sino de una exploración computacional exhaustiva.
 
-Además del costo en configuraciones y épocas, se midió el tiempo real
-de ejecución de la corrida final completa mediante la herramienta del
-sistema \texttt{/usr/bin/time}. La ejecución de
-\texttt{script\_final\_reporte.py}, que incluyó la búsqueda de
-hiperparámetros del MLP y de \textit{Random Forest}, tomó 581.99
-segundos de tiempo de pared, equivalentes a aproximadamente 9.70
-minutos. El registro del sistema también reportó 813.50 segundos de
-tiempo de usuario y 109.02 segundos de tiempo de sistema. Este dato
-permite al lector dimensionar que la experimentación final fue
-factible en una sola sesión de trabajo, pero suficientemente amplia
-para justificar que el resultado reportado proviene de una exploración
-rigorosa y no de una ejecución aislada.
+Además, se midió el tiempo real de ejecución de la corrida final completa utilizando la herramienta \texttt{/usr/bin/time}.
+
+El script \texttt{script\_final\_reporte.py}, que abarcó la búsqueda de hiperparámetros tanto para MLP como para \textit{Random Forest}, requirió 581.99 segundos (9.70 minutos) de tiempo de pared. El registro del sistema reportó 813.50 segundos de tiempo de usuario y 109.02 segundos de tiempo de sistema. Esto demuestra que la experimentación final fue factible en una sola sesión, pero al mismo tiempo lo suficientemente extensa como para justificar una exploración rigurosa.
 
 \section{Resultados}\label{sec:resultados}
 
-En esta sección se presentan tanto el análisis exploratorio del
-dataset como las evidencias del proceso de entrenamiento y los
-resultados finales de clasificación. Las figuras exploratorias
-permiten comprender la estructura del problema antes de interpretar
-el desempeño de los modelos.
+Esta sección presenta el análisis exploratorio del dataset, las evidencias del proceso de entrenamiento y los resultados finales de clasificación. Las figuras exploratorias ayudan a comprender la estructura del problema antes de interpretar el desempeño de los modelos.
 
 \begin{figure}[htbp]
 \centering
@@ -395,12 +175,7 @@ el desempeño de los modelos.
 \label{fig:clases}
 \end{figure}
 
-La Figura~\ref{fig:clases} evidencia el desbalance del dataset: la
-clase~4 representa más del 50\% de las muestras, mientras que la
-clase~0 es claramente minoritaria con 107 registros. Este desbalance
-tiene consecuencias directas sobre el comportamiento de los modelos
-y justifica el uso de métricas macro para evaluar el desempeño por
-clase de manera equitativa.
+La Figura~\ref{fig:clases} muestra el desbalance del dataset: la clase~4 representa más del 50\% de las muestras, mientras que la clase~0 es minoritaria con solo 107 registros. Este desbalance afecta directamente el comportamiento de los modelos y justifica el uso de métricas macro para evaluar el desempeño por clase de manera equitativa.
 
 \begin{figure}[htbp]
 \centering
@@ -409,11 +184,7 @@ clase de manera equitativa.
 \label{fig:continuas}
 \end{figure}
 
-La Figura~\ref{fig:continuas} muestra la distribución de las variables
-continuas. La edad presenta un rango muy acotado, lo que anticipa una
-baja capacidad discriminativa. El tiempo de estudio semanal, las
-ausencias y el promedio general muestran variabilidad más amplia,
-sugiriendo mayor potencial explicativo.
+La Figura~\ref{fig:continuas} ilustra la distribución de las variables continuas. La edad tiene un rango muy acotado, lo que sugiere una baja capacidad discriminativa. El tiempo de estudio semanal, las ausencias y el promedio general muestran mayor variabilidad, lo que indica un mayor potencial explicativo.
 
 \begin{figure}[htbp]
 \centering
@@ -422,12 +193,7 @@ sugiriendo mayor potencial explicativo.
 \label{fig:corr}
 \end{figure}
 
-La Figura~\ref{fig:corr} resume las relaciones lineales entre pares
-de variables. Destaca la relación inversa marcada entre \texttt{GPA}
-y \texttt{GradeClass}: a mayor promedio general, menor clase numérica,
-lo que es coherente con la codificación del problema. Las ausencias
-muestran correlación positiva con la clase de calificación, indicando
-que mayor ausentismo se asocia con peor desempeño.
+La Figura~\ref{fig:corr} resume las relaciones lineales entre pares de variables. Destaca la relación inversa marcada entre \texttt{GPA} y \texttt{GradeClass}: a mayor promedio general, menor clase numérica, lo cual es coherente con la codificación del problema. Las ausencias muestran correlación positiva con la clase de calificación, lo que indica que mayor ausentismo se asocia con un peor desempeño.
 
 \begin{figure}[htbp]
 \centering
@@ -436,12 +202,7 @@ que mayor ausentismo se asocia con peor desempeño.
 \label{fig:boxplots}
 \end{figure}
 
-La Figura~\ref{fig:boxplots} complementa la matriz de correlación al
-mostrar cómo cambian la mediana y la dispersión de cada variable
-continua a lo largo de las clases. Las ausencias aumentan
-progresivamente conforme empeora la clase, mientras que el promedio
-general disminuye. La edad permanece estable entre clases, confirmando
-su baja capacidad discriminativa.
+La Figura~\ref{fig:boxplots} complementa la matriz de correlación al mostrar cómo cambian la mediana y la dispersión de cada variable continua a lo largo de las clases. Las ausencias aumentan progresivamente conforme empeora la clase, mientras que el promedio general disminuye. La edad permanece estable entre clases, confirmando su baja capacidad discriminativa.
 
 \begin{figure}[htbp]
 \centering
@@ -450,10 +211,7 @@ su baja capacidad discriminativa.
 \label{fig:mlp}
 \end{figure}
 
-La Figura~\ref{fig:mlp} representa visualmente la arquitectura del
-modelo principal: capa de entrada, cuatro capas densas con activación
-ReLU y \textit{Dropout}(0.2), y capa de salida con cinco neuronas y
-activación \textit{softmax}.
+La Figura~\ref{fig:mlp} representa visualmente la arquitectura del modelo principal: capa de entrada, cuatro capas densas con activación ReLU y \textit{Dropout}(0.2), y capa de salida con cinco neuronas y activación \textit{softmax}.
 
 \begin{figure}[htbp]
 \centering
@@ -462,11 +220,7 @@ activación \textit{softmax}.
 \label{fig:busqueda_mlp}
 \end{figure}
 
-La Figura~\ref{fig:busqueda_mlp} documenta la exploración de
-hiperparámetros del MLP. Se observa que las configuraciones con
-\texttt{Adam} y tasa de aprendizaje de 0.0001 concentran los mejores
-valores de F1 macro en validación, mientras que \texttt{SGD} con
-tasas más altas presenta mayor variabilidad en los resultados.
+La Figura~\ref{fig:busqueda_mlp} documenta la exploración de hiperparámetros del MLP. Se observa que las configuraciones con \texttt{Adam} y una tasa de aprendizaje de 0.0001 concentran los mejores valores. El MLP con validación cruzada F1 macro muestra un aprendizaje más estable, mientras que \texttt{SGD} con tasas de aprendizaje más altas presenta mayor variabilidad en los resultados.
 
 \begin{figure}[htbp]
 \centering
@@ -475,12 +229,7 @@ tasas más altas presenta mayor variabilidad en los resultados.
 \label{fig:curvas_mlp}
 \end{figure}
 
-La Figura~\ref{fig:curvas_mlp} muestra la evolución del aprendizaje
-del mejor MLP. En la curva de pérdida se observa una disminución
-consistente en ambos subconjuntos, sin divergencia entre entrenamiento
-y validación. La curva de exactitud confirma una mejora sostenida y
-estable. La proximidad entre ambas curvas sugiere que el
-\textit{Dropout} cumplió su función regulatoria de manera efectiva.
+La Figura~\ref{fig:curvas_mlp} ilustra la evolución del aprendizaje del mejor MLP. La curva de pérdida disminuye consistentemente en ambos subconjuntos, sin divergencia entre entrenamiento y validación. La curva de exactitud confirma una mejora sostenida y estable. La proximidad entre ambas curvas indica que el \textit{Dropout} cumplió eficazmente su función regulatoria.
 
 \begin{figure}[htbp]
 \centering
@@ -489,34 +238,26 @@ estable. La proximidad entre ambas curvas sugiere que el
 \label{fig:busqueda_rf}
 \end{figure}
 
-La Figura~\ref{fig:busqueda_rf} presenta la exploración de
-hiperparámetros de \textit{Random Forest}. Las configuraciones con
-profundidad sin límite y tamaños mínimos de hoja pequeños tienden a
-concentrar los mejores resultados, aunque con diferencias marginales
-entre ellas.
+La Figura~\ref{fig:busqueda_rf} muestra la exploración de hiperparámetros de \textit{Random Forest}. Las configuraciones con profundidad sin límite y tamaños mínimos de hoja pequeños tienden a concentrar los mejores resultados, aunque con diferencias marginales entre ellas.
 
 \begin{table}[htbp]
 \centering
-\caption{Comparación final de modelos}
+\caption{Comparación cuantitativa final de modelos}
 \scriptsize
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{p{2.2cm}cccc}
 \toprule
 Modelo & Exactitud & Precisión macro & Sensibilidad macro & Puntaje F1 macro \\
 \midrule
-MLP principal  & 0.8607 & 0.8270 & 0.7405 & 0.7643 \\
-Random Forest  & 0.9331 & 0.9147 & 0.8363 & 0.8604 \\
+MLP principal & 0.8607 & 0.8270 & 0.7405 & 0.7643 \\
+Random Forest & 0.9331 & 0.9147 & 0.8363 & 0.8604 \\
 \bottomrule
 \end{tabular}
 \normalsize
 \label{tab:comparacion}
 \end{table}
 
-La Tabla~\ref{tab:comparacion} concentra la comparación cuantitativa
-principal. El MLP alcanzó una exactitud de 0.8607 y un puntaje F1
-macro de 0.7643, resultado sólido considerando la arquitectura fija
-requerida. \textit{Random Forest} superó al MLP en todas las métricas,
-alcanzando 0.9331 de exactitud y 0.8604 de F1 macro.
+La Tabla~\ref{tab:comparacion} presenta la comparación cuantitativa principal. El MLP alcanzó una exactitud de 0.8607 y un puntaje F1 macro de 0.7643, un resultado sólido considerando la arquitectura fija requerida. \textit{Random Forest} superó al MLP en todas las métricas, alcanzando 0.9331 de exactitud y 0.8604 de F1 macro.
 
 \begin{figure}[htbp]
 \centering
@@ -525,14 +266,7 @@ alcanzando 0.9331 de exactitud y 0.8604 de F1 macro.
 \label{fig:confusiones}
 \end{figure}
 
-La Figura~\ref{fig:confusiones} revela la estructura de errores de
-cada modelo. En ambos casos la clase~4 obtiene el mejor
-reconocimiento, asociado tanto a su mayor frecuencia como a la
-señal explicativa de \texttt{GPA}. La clase~0 es la más difícil
-en ambos modelos, aunque \textit{Random Forest} logra una tasa de
-identificación superior. Los errores se concentran principalmente
-entre clases adyacentes, lo que es coherente con la naturaleza
-ordinal del problema.
+La Figura~\ref{fig:confusiones} revela la estructura de errores de cada modelo. En ambos casos, la clase~4 obtiene el mejor reconocimiento, asociado tanto a su mayor frecuencia como a la señal explicativa de \texttt{GPA}. La clase~0 es la más difícil en ambos modelos, aunque \textit{Random Forest} logra una tasa de identificación superior. Los errores se concentran principalmente entre clases adyacentes, lo que es coherente con la naturaleza ordinal del problema.
 
 \begin{figure}[htbp]
 \centering
@@ -541,11 +275,9 @@ ordinal del problema.
 \label{fig:metricas}
 \end{figure}
 
-La Figura~\ref{fig:metricas} facilita la lectura comparativa del
-desempeño. Confirma visualmente que la ventaja de \textit{Random
-Forest} sobre el MLP es consistente en exactitud, precisión macro,
-sensibilidad macro y puntaje F1 macro, y no se limita a una sola
-métrica.
+La Figura~\ref{fig:metricas} facilita la lectura comparativa del desempeño. La Figura~\ref{fig:importancia} y la Tabla~\ref{tab:importancia} muestran claramente que el \texttt{GPA} es, por mucho, la variable más influyente, con un valor de 0.4864. Le siguen las ausencias (0.2076) y el tiempo de estudio semanal (0.0904). Variables como la edad, el grupo étnico y la educación parental tienen una influencia mínima. Estos resultados se alinean con la lógica del problema: el desempeño académico previo y los hábitos de estudio son los predictores más directos de la calificación final.
+
+Random Forest supera al perceptrón multicapa (MLP) en varias métricas clave, incluyendo exactitud, precisión macro, sensibilidad macro y puntaje F1 macro. Esta superioridad constante en múltiples métricas refuerza la ventaja de \textit{Random Forest} sobre el MLP.
 
 \begin{figure}[htbp]
 \centering
@@ -563,165 +295,55 @@ métrica.
 \toprule
 Variable & Importancia \\
 \midrule
-GPA                        & 0.4864 \\
-ausencias                  & 0.2076 \\
-tiempo de estudio semanal  & 0.0904 \\
-apoyo parental             & 0.0437 \\
-edad                       & 0.0311 \\
-grupo étnico               & 0.0285 \\
-educación parental         & 0.0281 \\
+GPA & 0.4864 \\
+ausencias & 0.2076 \\
+tiempo de estudio semanal & 0.0904 \\
+apoyo parental & 0.0437 \\
+edad & 0.0311 \\
+grupo étnico & 0.0285 \\
+educación parental & 0.0281 \\
 \bottomrule
 \end{tabular}
 \normalsize
 \label{tab:importancia}
 \end{table}
 
-La Figura~\ref{fig:importancia} y la Tabla~\ref{tab:importancia}
-muestran que \texttt{GPA} es, por amplio margen, la variable más
-influyente (0.4864), seguida por las ausencias (0.2076) y el tiempo
-de estudio semanal (0.0904). Variables como la edad, el grupo étnico
-y la educación parental contribuyen de forma marginal. Estos resultados
-son coherentes con la semántica del problema: el desempeño pasado y
-los hábitos de dedicación escolar son los predictores más directos
-de la clase de calificación.
-
-\section{Discusión}\label{sec:discusion}
-
-El MLP principal alcanzó una exactitud de 0.8607 y un F1 macro de
-0.7643, confirmando que la arquitectura especificada en el enunciado
-es capaz de resolver el problema de manera competitiva. La búsqueda
-de hiperparámetros mostró que la configuración óptima (\texttt{Adam},
-tasa 0.0001, lote 32, 50 épocas) favoreció un aprendizaje gradual y
-estable, visible en las curvas de la Figura~\ref{fig:curvas_mlp}.
-
-\textit{Random Forest} superó al MLP en todas las métricas principales.
-Este resultado es coherente con la literatura para problemas educativos
-con datos tabulares, donde los métodos de ensamble suelen superar a
-arquitecturas profundas cuando el dataset es relativamente compacto y
-contiene variables altamente informativas~\cite{rf_algorithms,rf_dropout_review,rf_advising}.
-El resultado transmite además una idea conceptualmente relevante: una
-red neuronal no supera necesariamente a un clasificador clásico; la
-conveniencia de cada enfoque depende de la naturaleza del problema,
-el volumen de datos y la estructura de las variables.
-
-El análisis de importancia de variables (Tabla~\ref{tab:importancia})
-revela que \texttt{GPA} concentra casi el 49\% de la importancia
-total del modelo. Esto es coherente con el diseño del dataset, donde
-\texttt{GradeClass} es precisamente una categorización de \texttt{GPA}.
-El modelo está aprendiendo, en gran medida, a convertir un valor
-continuo en su etiqueta discreta correspondiente. Las ausencias y el
-tiempo de estudio semanal aportan señal adicional real, relacionada
-con hábitos y compromiso académico.
-
-La clase~0 fue la más difícil de identificar en ambos modelos. El
-desbalance (107 muestras frente a 1211 de clase~4) explica
-parcialmente este comportamiento, pero el análisis de separabilidad
-entre clases sugiere que el perfil conductual de los estudiantes de
-clase~0 y clase~1 es genuinamente similar en el espacio de variables
-disponibles, lo que representa un límite intrínseco del dataset para
-la identificación temprana de riesgo severo. Una predicción
-institucional útil de ese segmento requeriría variables adicionales
-no presentes en este dataset, como historial académico por periodo
-o indicadores socioeconómicos más granulares.
-
 \section{Conclusiones}\label{sec:conclusiones}
 
-El estudio mostró que el rendimiento académico estudiantil puede
-modelarse con alto desempeño a partir de variables demográficas,
-hábitos de estudio, apoyo parental y promedio general. En el escenario
-principal, el MLP alcanzó una exactitud de 0.8607 y un puntaje F1
-macro de 0.7643, mientras que \textit{Random Forest} obtuvo el mejor
-resultado global con una exactitud de 0.9331 y un puntaje F1 macro de
-0.8604.
+El estudio reveló que el rendimiento académico estudiantil se puede modelar con precisión a partir del conjunto completo de atributos disponibles en el \textit{Student Performance Dataset}. En el escenario principal, el modelo de red neuronal multicapa (MLP) logró una exactitud de 0.8607 y un puntaje F1 macro de 0.7643. Sin embargo, \textit{Random Forest} superó al MLP, obteniendo el mejor desempeño general con una exactitud de 0.9331 y un puntaje F1 macro de 0.8604.
 
-Los hallazgos muestran que la combinación de preprocesamiento
-adecuado, partición estratificada, búsqueda sistemática de
-hiperparámetros e interpretación de importancia de variables es
-determinante para construir un modelo sólido y comunicar resultados
-significativos. La comparación entre un enfoque profundo y un método
-clásico confirma que, en datos tabulares compactos con variables
-altamente informativas, \textit{Random Forest} puede ser más
-conveniente que una arquitectura densa.
+Para construir un modelo sólido y comunicar resultados significativos, es crítico un preprocesamiento adecuado, la partición estratificada, la búsqueda sistemática de hiperparámetros y la interpretación de la importancia de las variables. En conjuntos de datos tabulares compactos con variables altamente informativas, \textit{Random Forest} puede ser más adecuado que una arquitectura densa, como lo demuestra la comparación entre un enfoque profundo y un método clásico.
 
-El análisis complementario del apéndice mostró además que, aun sin
-información académica previa consolidada, es posible recuperar señal
-predictiva útil mediante variables de comportamiento y acompañamiento.
-Sin embargo, también evidenció un límite importante de separabilidad
-entre los perfiles de desempeño más bajos y sus clases vecinas, lo
-que sugiere que una caracterización temprana más precisa requeriría
-atributos adicionales, por ejemplo historial académico por periodo o
-indicadores contextuales más finos. En conjunto, los resultados
-apuntan a dos lecturas complementarias: una de clasificación del
-desempeño observado con alta exactitud, y otra de identificación
-temprana del riesgo académico con valor institucional, aunque todavía
-condicionada por la información disponible en el dataset.
+El análisis del apéndice mostró que, sin información académica previa consolidada, se puede extraer información predictiva valiosa de las variables de comportamiento y acompañamiento. Sin embargo, hay un límite importante para separar los perfiles de desempeño más bajos de sus clases adyacentes. Esto indica que una caracterización temprana más precisa necesita atributos adicionales, como el historial académico por periodo o indicadores contextuales más detallados.
+
+Los resultados ofrecen dos perspectivas: una se centra en clasificar con precisión el desempeño observado, y la otra en identificar el riesgo académico temprano, lo cual es valioso para la institución. La eficacia de estos enfoques está limitada por la información disponible en el conjunto de datos.
 
 \appendices
 \phantomsection
 \section{Caracterización inicial del estudiante sin información académica previa}\label{sec:apendice_temprana}
 
-\textit{¿Qué puede saberse del perfil de un estudiante antes de contar
-con información académica consolidada?} Esta es la pregunta que da
-origen a este apéndice. Desde una perspectiva institucional, su
-interés es claro: un sistema de alerta temprana no siempre dispone del
-promedio final del periodo ni de una etiqueta de desempeño ya
-construida, pero sí puede conocer variables de contexto y hábitos como
-ausencias, tiempo de estudio, tutorías, apoyo parental y participación
-en actividades.
+Antes de contar con información académica consolidada, ¿qué se puede saber del perfil de un estudiante? Esta pregunta motiva este apéndice, ya que desde la perspectiva institucional, un sistema de alerta temprana no siempre tiene acceso al promedio final del periodo ni a una etiqueta de desempeño ya lista. Sin embargo, sí puede acceder a variables contextuales y hábitos como ausencias, tiempo de estudio, tutorías, apoyo parental y participación en actividades.
 
 \subsection{Motivación}
 
-En el cuerpo principal del trabajo, \texttt{GPA} fue una variable
-válida porque el enunciado no prohibía su uso y el objetivo era
-comparar modelos sobre el conjunto completo de atributos. Sin
-embargo, para fines de caracterización inicial del estudiante,
-\texttt{GPA} deja de ser una señal adecuada, porque forma parte del
-resultado ya observado y no de la información disponible al inicio del
-seguimiento. Por ello, se abrió una línea exploratoria separada en la
-que se excluyó \texttt{GPA} y se reformuló la tarea como una
-aproximación a la identificación temprana de perfiles de riesgo
-académico.
+En el núcleo principal del trabajo, el \texttt{GPA} fue una variable válida porque el enunciado no la prohibía y el objetivo era comparar modelos sobre el conjunto completo de atributos. Sin embargo, para la caracterización inicial del estudiante, el \texttt{GPA} deja de ser una señal adecuada, ya que forma parte del resultado ya observado y no de la información disponible al inicio del seguimiento. Por lo tanto, se abrió una línea exploratoria separada en la que se excluyó el \texttt{GPA} y se reformuló la tarea como una aproximación a la identificación temprana de perfiles de riesgo académico.
 
 \subsection{Ingeniería de variables}
 
-Para este escenario se trabajó con un conjunto base formado por
-variables demográficas, de hábitos y de apoyo, sin incluir
-\texttt{GPA}. Posteriormente se construyó una versión enriquecida
-mediante ingeniería de variables. La intención no fue incrementar el
-número de atributos de manera arbitraria, sino aproximar señales de
-conducta y acompañamiento que podrían estar disponibles durante el
-periodo escolar, antes de contar con un resultado académico
-consolidado.
+En este escenario, partimos de un conjunto base de variables demográficas, de hábitos y de apoyo, sin incluir el \texttt{GPA}. Posteriormente, enriquecimos este conjunto mediante ingeniería de variables. El objetivo no era simplemente aumentar el número de atributos, sino identificar señales de conducta y acompañamiento que podrían estar disponibles durante el periodo escolar, antes de contar con un resultado académico consolidado.
 
 Entre las variables derivadas más relevantes se encuentran:
+
 \begin{itemize}
-  \item \texttt{StudyTimePerAbsence}, que aproxima la relación entre
-    tiempo de estudio y ausentismo;
-  \item \texttt{AcademicEngagementScore}, que resume una idea de
-    compromiso académico a partir de estudio, tutorías, apoyo y
-    ausencias;
-  \item \texttt{SupportActivityInteraction}, que combina apoyo
-    parental con participación extracurricular;
-  \item \texttt{SupportTutoringInteraction}, que refleja la posible
-    acción conjunta entre acompañamiento familiar y tutoría.
+  \item \texttt{StudyTimePerAbsence}: aproxima la relación entre el tiempo de estudio y el ausentismo.
+  \item \texttt{AcademicEngagementScore}: resume una idea de compromiso académico a partir de factores como el estudio, las tutorías, el apoyo y las ausencias.
+  \item \texttt{SupportActivityInteraction}: combina el apoyo parental con la participación extracurricular.
+  \item \texttt{SupportTutoringInteraction}: refleja la posible acción conjunta entre el acompañamiento familiar y la tutoría.
 \end{itemize}
 
-Estas variables se concibieron como \textit{proxies conductuales},
-es decir, indicadores indirectos del modo en que un estudiante se
-vincula con su proceso formativo antes de contar con una calificación
-final consolidada.
+Estas variables se concibieron como \textit{proxies} conductuales, es decir, indicadores indirectos de cómo un estudiante se vincula con su proceso formativo antes de contar con una calificación final consolidada.
 
 \subsection{Resultados de caracterización sin información académica previa}
-
-La Tabla~\ref{tab:apendice_comparacion_sin_gpa} muestra el efecto de
-la ingeniería de variables sobre el mejor modelo construido sin
-\texttt{GPA}. El conjunto base alcanzó una exactitud de 0.7131 y un
-puntaje F1 macro de 0.5624. Al incorporar ingeniería de variables, el
-rendimiento aumentó hasta 0.7604 de exactitud y 0.6039 de puntaje F1
-macro. La mejora no es marginal: implica recuperar señal útil a partir
-de relaciones conductuales y contextuales, incluso cuando el modelo ya
-no dispone de la variable más directamente asociada con el resultado
-académico final.
 
 \begin{table}[htbp]
 \centering
@@ -729,42 +351,35 @@ académico final.
 \scriptsize
 \setlength{\tabcolsep}{3pt}
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{p{2.6cm}cccc}
+\begin{tabular}{lcccc}
 \toprule
 Escenario & Exactitud & \shortstack{Precisión\\macro} & \shortstack{Sensibilidad\\macro} & \shortstack{Puntaje F1\\macro} \\
 \midrule
-Base sin \texttt{GPA} & 0.7131 & 0.6222 & 0.5490 & 0.5624 \\
+Base sin GPA & 0.7131 & 0.6222 & 0.5490 & 0.5624 \\
 Ingeniería de variables & 0.7604 & 0.6495 & 0.5946 & 0.6039 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
 }
 \normalsize
 \label{tab:apendice_comparacion_sin_gpa}
 \end{table}
 
-Este resultado permite una interpretación importante: cuando se
-elimina la información académica ya consolidada, el problema se vuelve
-claramente más difícil que el del cuerpo principal, pero no se vuelve
-trivial ni imposible. La ingeniería de variables aporta valor real
-porque logra recuperar parte de la estructura latente del
-comportamiento estudiantil.
+La Tabla~\ref{tab:apendice_comparacion_sin_gpa} ilustra el impacto de la ingeniería de variables en el mejor modelo desarrollado sin el \texttt{GPA}. El conjunto base logró una exactitud de 0.7131 y un puntaje F1 macro de 0.5624. Sin embargo, al incorporar ingeniería de variables, el rendimiento mejoró significativamente, alcanzando una exactitud de 0.7604 y un puntaje F1 macro de 0.6039. Esta mejora sustancial demuestra la capacidad de recuperar información valiosa a partir de relaciones conductuales y contextuales, incluso cuando el modelo carece de la variable más directamente relacionada con el resultado académico final.
+
+Lo anterior conlleva implicaciones significativas. Al prescindir de la información académica consolidada, la resolución del problema presenta una mayor complejidad respecto al núcleo del estudio; sin embargo, no deriva en una tarea trivial.
 
 \subsection{Límite de separabilidad de la clase 0}
 
-El aspecto más difícil de esta caracterización temprana fue la
-identificación de la clase~0, correspondiente al nivel más bajo de
-desempeño. Para determinar si ese problema dependía del modelo o del
-propio dataset, se realizó un análisis de separabilidad entre la
-clase~0 y las clases cercanas.
+El reto principal de esta caracterización temprana consistió en la identificación de la clase~0, correspondiente al estrato de menor desempeño. Con el fin de discernir si las dificultades de clasificación emanaban de la arquitectura del modelo o de la naturaleza intrínseca del conjunto de datos, se procedió a un análisis de separabilidad frente a las categorías adyacentes.
 
 \begin{table}[htbp]
 \centering
 \caption{Variables con mayor separación entre clase 0 y clase 1}
 \scriptsize
-\setlength{\tabcolsep}{5pt}
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{lc}
 \toprule
-Variable & Estadístico KS (0 vs 1) \\
+Variable & KS 0 vs 1 \\
 \midrule
 \texttt{StudyTimePerAbsence} & 0.224 \\
 \texttt{ParentalSupport} & 0.208 \\
@@ -777,39 +392,29 @@ Variable & Estadístico KS (0 vs 1) \\
 \label{tab:apendice_ks}
 \end{table}
 
-La Tabla~\ref{tab:apendice_ks} resume las variables con mayor
-separación entre clase~0 y clase~1 según el estadístico KS. Los
-valores observados muestran que sí existe señal útil, especialmente en
-la razón estudio/ausencias, el apoyo parental y las interacciones
-relacionadas con apoyo y tutoría. Sin embargo, los niveles de
-separación son moderados y no permiten una distinción limpia.
+La Tabla~\ref{tab:apendice_ks} detalla las variables que presentan una mayor discriminación entre las clases~0 y~1 bajo el estadístico KS. Si bien los valores confirman la presencia de señales predictivas valiosas, especialmente en métricas de apoyo parental, tutorías y la relación estudio-ausencias, las magnitudes de separación son moderadas, impidiendo una delimitación absoluta entre ambos grupos.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{separabilidad_pca.png}
-\caption{Visualización en dos componentes principales de la separabilidad entre clases sin información académica previa.}
+\caption{Proyección PCA para analizar la separabilidad de la clase 0.}
 \label{fig:apendice_pca}
 \end{figure}
 
-La Figura~\ref{fig:apendice_pca} refuerza este hallazgo de forma
-visual. Aunque la clase~0 presenta cierta tendencia a ocupar regiones
-distintas del espacio proyectado, existe traslape considerable con la
-clase~1. Para dimensionar mejor este límite, también se exploraron
-estrategias adicionales sobre el mismo escenario de caracterización
-temprana, como se resume en la Tabla~\ref{tab:apendice_estrategias}.
+Esta condición se hace evidente en la Figura~\ref{fig:apendice_pca}, donde la proyección espacial muestra que la clase~0, aunque tiende a agruparse en regiones específicas, mantiene un traslape sustancial con la clase~1.
 
 \begin{table}[htbp]
 \centering
-\caption{Estrategias exploradas en el escenario sin información académica previa}
+\caption{Estrategias adicionales evaluadas sin GPA}
 \scriptsize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{3.0cm}cc}
+\begin{tabular}{lcc}
 \toprule
-Estrategia & Exactitud & Puntaje F1 macro \\
+Estrategia & Exactitud & F1 macro \\
 \midrule
-Random Forest con ingeniería de variables & 0.7604 & 0.6039 \\
-Threshold tuning sobre clase 0 & 0.7577 & 0.5974 \\
-Clasificación ordinal Frank \& Hall & 0.7493 & 0.5829 \\
+Ingeniería de variables v1 & 0.7604 & 0.6039 \\
+Ajuste de umbral & 0.7577 & 0.5974 \\
+Clasificación ordinal & 0.7493 & 0.5829 \\
 HistGradientBoosting & 0.7075 & 0.5584 \\
 SMOTE + Random Forest & 0.7019 & 0.5705 \\
 Clasificación en dos etapas & 0.7103 & 0.5350 \\
@@ -819,37 +424,18 @@ Clasificación en dos etapas & 0.7103 & 0.5350 \\
 \label{tab:apendice_estrategias}
 \end{table}
 
-La Tabla~\ref{tab:apendice_estrategias} muestra que ninguna de estas
-variantes logró superar al mejor \textit{Random Forest} con
-ingeniería de variables. En otras palabras, el cuello de botella no
-parece estar únicamente en la elección del algoritmo, sino en el
-solapamiento real entre perfiles cercanos de bajo desempeño.
+Exploraciones adicionales consignadas en la Tabla~\ref{tab:apendice_estrategias} corroboran que ninguna variante metodológica logró superar el rendimiento del modelo \textit{Random Forest} potenciado con ingeniería de variables. Lo anterior sugiere que la restricción no reside en la selección del algoritmo, sino en la convergencia real de los perfiles de bajo desempeño.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{separabilidad_distribuciones.png}
-\caption{Distribuciones comparadas de las variables más separables entre clase 0 y clase 1.}
-\label{fig:apendice_dists}
+\caption{Distribuciones de variables clave para clase 0 y clase 1.}
+\label{fig:apendice_dist}
 \end{figure}
 
-Las distribuciones de la Figura~\ref{fig:apendice_dists} muestran el
-mismo patrón desde otra perspectiva: hay diferencias observables, pero
-no una separación tajante. En la evaluación binaria exclusiva entre
-clase~0 y clase~1 se obtuvo un AUC de 0.7345, mientras que en el
-escenario clase~0 contra todas las demás clases se obtuvo un AUC de
-0.8211. Esta diferencia sugiere que la clase~0 sí es distinguible del
-conjunto global, pero su frontera más problemática está precisamente
-en la cercanía con la clase~1.
+El análisis de las distribuciones en la Figura~\ref{fig:apendice_dist} refuerza esta interpretación: existen matices observables, pero no una ruptura clara. Esta ambigüedad se cuantifica en la evaluación binaria: mientras que el escenario clase~0 frente a clase~1 alcanza un AUC de 0.7345, la comparación de la clase~0 contra el resto del conjunto se eleva a un AUC de 0.8211.
 
-En consecuencia, el límite principal de este escenario no parece
-estar únicamente en la arquitectura del clasificador, sino en el
-nivel de solapamiento real entre perfiles de bajo desempeño y
-desempeño inmediatamente superior. Este apéndice, por tanto, no solo
-documenta un experimento alternativo, sino que ofrece una lectura más
-institucional del problema: aun sin información académica previa, los
-atributos conductuales y de apoyo permiten recuperar señal relevante,
-pero el techo de separabilidad del dataset impone una restricción
-natural sobre la detección temprana del riesgo severo.
+Dicha discrepancia confirma que la clase~0 es distinguible a nivel global, pero su frontera crítica se sitúa en la vecindad inmediata de la clase~1. En conclusión, el techo de rendimiento del clasificador está condicionado por el límite de separabilidad del dataset y la similitud conductual entre perfiles de riesgo. Este análisis no solo documenta un escenario alternativo, sino que valida la capacidad de los atributos conductuales para rescatar señales relevantes incluso ante la ausencia de antecedentes académicos formales.
 
 \phantomsection\label{sec:referencias}
 \begin{thebibliography}{00}
