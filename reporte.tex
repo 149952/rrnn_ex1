@@ -1,0 +1,225 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{url}
+\usepackage{amsmath}
+
+\title{Clasificación del desempeño académico estudiantil mediante MLP y Random Forest}
+
+\author{
+\IEEEauthorblockN{Ramon Aguilera Ruben \and Torres Laveaga Manuel}
+\IEEEauthorblockA{ \\ }
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+En este trabajo se aborda un problema de clasificación supervisada para predecir la clase de desempeño académico de estudiantes de preparatoria a partir de variables demográficas, hábitos de estudio, apoyo parental, actividades extracurriculares y promedio general. Se implementó como modelo principal una red neuronal multicapa con la arquitectura solicitada en el enunciado y, como modelo comparativo adicional, un clasificador Random Forest sustentado en literatura previa sobre predicción de desempeño académico y deserción escolar. Se realizó preprocesamiento, partición estratificada, búsqueda de hiperparámetros, evaluación con métricas de clasificación y análisis por medio de matrices de confusión normalizadas e importancia de variables. Los resultados muestran que ambos modelos alcanzan un desempeño competitivo, aunque Random Forest obtuvo el mejor resultado final sobre el conjunto de prueba.
+\end{abstract}
+
+\begin{IEEEkeywords}
+clasificación, redes neuronales, Random Forest, desempeño académico, deserción escolar
+\end{IEEEkeywords}
+
+\section{Introducción}
+La predicción temprana del desempeño académico es una tarea relevante en contextos educativos porque permite identificar estudiantes en riesgo y apoyar la toma de decisiones institucionales relacionadas con seguimiento académico, tutorías y estrategias de permanencia escolar. En particular, la detección oportuna de patrones asociados con bajo rendimiento puede contribuir al análisis de factores relacionados con rezago y deserción escolar.
+
+En este trabajo se utilizó el conjunto de datos \textit{Student Performance Dataset}, el cual contiene registros de 2392 estudiantes de preparatoria. El problema se formuló como clasificación multiclase, donde la variable objetivo corresponde a \texttt{GradeClass}. El objetivo fue desarrollar un modelo de red neuronal con la arquitectura indicada por el profesor y compararlo con un segundo modelo respaldado por literatura académica.
+
+\section{Trabajo relacionado}
+Diversos trabajos han abordado la predicción del rendimiento académico y la deserción estudiantil mediante técnicas de aprendizaje automático y aprendizaje profundo. En la literatura reciente se reporta el uso de clasificadores como \textit{Random Forest}, máquinas de soporte vectorial, árboles de decisión, \textit{k}-vecinos más cercanos y redes neuronales multicapa para problemas de clasificación educativa.
+
+Los enfoques basados en \textit{Random Forest} resultan particularmente adecuados para datos tabulares debido a su capacidad para modelar relaciones no lineales, su robustez frente al ruido y su utilidad para estimar importancia de variables. De manera complementaria, las redes neuronales multicapa permiten aprender representaciones no lineales a partir de combinaciones de atributos, por lo que constituyen una referencia natural cuando se desea comparar un modelo profundo con uno de aprendizaje automático clásico.
+
+En este estudio se adoptó la arquitectura de red neuronal propuesta en el artículo con DOI \texttt{10.1109/ACCESS.2021.3119596}, ajustando la capa de entrada y la capa de salida al problema presente. Como modelo comparativo se seleccionó \textit{Random Forest}, decisión fundamentada en trabajos previos de predicción de rendimiento académico y deserción escolar.
+
+\section{Fundamento}
+\subsection{Capas densas}
+Una capa densa realiza una transformación afín sobre el vector de entrada y posteriormente aplica una función de activación. Su propósito es aprender combinaciones lineales y no lineales de los atributos de entrada. En este trabajo se empleó la función de activación ReLU por su eficiencia computacional y por su utilidad para mitigar el problema del desvanecimiento del gradiente.
+
+\subsection{Dropout}
+La técnica \textit{Dropout} desactiva aleatoriamente una fracción de neuronas durante el entrenamiento. Su objetivo es reducir el sobreajuste, evitar la coadaptación excesiva entre neuronas y mejorar la capacidad de generalización del modelo.
+
+\subsection{Softmax}
+La capa de salida utiliza la función \textit{softmax}, que transforma las salidas del modelo en probabilidades asociadas a cada clase. Esto permite seleccionar la clase con mayor probabilidad estimada y evaluar el modelo como un problema de clasificación multiclase.
+
+\subsection{Random Forest}
+\textit{Random Forest} es un método de ensamble basado en múltiples árboles de decisión entrenados sobre subconjuntos aleatorios de datos y atributos. Su decisión final se obtiene mediante votación agregada, lo cual reduce la varianza del modelo y suele proporcionar alto desempeño en datos tabulares.
+
+\section{Metodología}
+\subsection{Conjunto de datos}
+Se utilizó el conjunto de datos \textit{Student Performance Dataset}, compuesto por 2392 registros y 15 columnas. Las variables incluyen edad, género, etnicidad, educación parental, tiempo de estudio semanal, ausencias, tutorías, apoyo parental, actividades extracurriculares, deportes, música, voluntariado, promedio general y clase de desempeño académico.
+
+Como parte del preprocesamiento se verificó la integridad del archivo, se confirmó la ausencia de valores nulos y se eliminaron atributos sin valor predictivo directo, como \texttt{StudentID}. Dado que el enunciado no prohíbe explícitamente el uso de \texttt{GPA}, se decidió trabajar con el conjunto completo de atributos para el escenario principal del reporte.
+
+\subsection{Partición y evaluación}
+Los datos se dividieron mediante una partición estratificada en entrenamiento, validación y prueba, preservando la proporción de clases en cada subconjunto. Esta decisión responde tanto a la recomendación metodológica del profesor como al desbalance presente en el conjunto de datos.
+
+Se evaluó el desempeño mediante exactitud, precisión macro, sensibilidad macro y puntaje F1 macro. Además, se construyeron matrices de confusión normalizadas para analizar con mayor detalle el comportamiento por clase.
+
+\subsection{Modelo principal}
+El modelo principal fue una red neuronal multicapa con la arquitectura solicitada:
+\begin{itemize}
+  \item capa oculta 1: 200 neuronas, activación ReLU;
+  \item \textit{Dropout} con tasa 0.2;
+  \item capa oculta 2: 200 neuronas, activación ReLU;
+  \item \textit{Dropout} con tasa 0.2;
+  \item capa oculta 3: 150 neuronas, activación ReLU;
+  \item \textit{Dropout} con tasa 0.2;
+  \item capa oculta 4: 200 neuronas, activación ReLU;
+  \item \textit{Dropout} con tasa 0.2.
+\end{itemize}
+
+La capa de entrada se ajustó al número de atributos y la capa de salida al número de clases. Se realizó búsqueda de hiperparámetros variando optimizador, tasa de aprendizaje, tamaño de lote y número de épocas.
+
+\subsection{Modelo comparativo}
+Como modelo comparativo se utilizó \textit{Random Forest}. Se exploraron distintas combinaciones de número de árboles, profundidad máxima, peso por clase y tamaño mínimo de hoja. Su inclusión respondió a dos motivos: respaldo en la literatura y desempeño esperado en datos tabulares.
+
+\section{Resultados}
+La Figura~\ref{fig:clases} muestra la distribución de clases del conjunto de datos. Se observa un desbalance claro, con predominio de la clase 4. La Figura~\ref{fig:corr} presenta la matriz de correlación, donde destaca la relación entre \texttt{Absences}, \texttt{GPA} y \texttt{GradeClass}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{grafica_distribucion_clases.png}
+\caption{Distribución de clases del conjunto de datos.}
+\label{fig:clases}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{graficas_distribucion_variables_continuas.png}
+\caption{Distribución de las variables continuas utilizadas en el estudio.}
+\label{fig:continuas}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{matriz_correlacion.png}
+\caption{Matriz de correlación entre variables.}
+\label{fig:corr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{boxplots_variables_por_clase.png}
+\caption{Distribución de variables continuas por clase mediante diagramas de caja.}
+\label{fig:boxplots}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{arquitectura_mlp_principal.png}
+\caption{Arquitectura del MLP principal utilizada en el experimento.}
+\label{fig:mlp}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_mlp.png}
+\caption{Comparación de hiperparámetros evaluados para el MLP principal.}
+\label{fig:busqueda_mlp}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{curvas_entrenamiento_mlp.png}
+\caption{Curvas de pérdida y exactitud del mejor MLP durante entrenamiento y validación.}
+\label{fig:curvas_mlp}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_random_forest.png}
+\caption{Comparación de hiperparámetros evaluados para Random Forest.}
+\label{fig:busqueda_rf}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Comparación final de modelos}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.2cm}cccc}
+\toprule
+Modelo & Exactitud & Precisión macro & Sensibilidad macro & Puntaje F1 macro \\
+\midrule
+MLP principal & 0.8607 & 0.8270 & 0.7405 & 0.7643 \\
+Random Forest & 0.9331 & 0.9147 & 0.8363 & 0.8604 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:comparacion}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{matrices_confusion_comparadas.png}
+\caption{Matrices de confusión normalizadas del MLP principal y de Random Forest.}
+\label{fig:confusiones}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{comparacion_metricas_modelos.png}
+\caption{Comparación de métricas entre modelos.}
+\label{fig:metricas}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{importancia_variables_random_forest.png}
+\caption{Importancia de variables estimada por Random Forest.}
+\label{fig:importancia}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Variables más relevantes según Random Forest}
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lc}
+\toprule
+Variable & Importancia \\
+\midrule
+GPA & 0.4864 \\
+Absences & 0.2076 \\
+StudyTimeWeekly & 0.0904 \\
+ParentalSupport & 0.0437 \\
+Age & 0.0311 \\
+Ethnicity & 0.0285 \\
+ParentalEducation & 0.0281 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:importancia}
+\end{table}
+
+\section{Discusión}
+El MLP principal alcanzó una exactitud de 0.8607, lo que confirma que la arquitectura exigida por el enunciado es capaz de obtener un desempeño competitivo en este problema. La búsqueda de hiperparámetros mostró que la mejor configuración fue \texttt{Adam}, tasa de aprendizaje de 0.0001, tamaño de lote de 32 y 50 épocas.
+
+Las Figuras~\ref{fig:continuas} y~\ref{fig:boxplots} aportan información descriptiva útil para interpretar el problema. La variable \texttt{Absences} muestra una variación clara entre clases, mientras que \texttt{GPA} presenta una separación más marcada del comportamiento de las categorías, lo cual es consistente con su alta capacidad explicativa. De igual manera, la Figura~\ref{fig:curvas_mlp} evidencia una convergencia estable del MLP sin señales severas de inestabilidad entre entrenamiento y validación.
+
+El modelo comparativo \textit{Random Forest} superó al MLP en todas las métricas principales, alcanzando una exactitud de 0.9331 y un puntaje F1 macro de 0.8604. Este resultado es coherente con lo reportado en la literatura para problemas educativos con datos tabulares, donde los métodos de ensamble suelen ofrecer ventajas en interpretabilidad y desempeño.
+
+El análisis de importancia de variables, resumido en la Tabla~\ref{tab:importancia} y la Figura~\ref{fig:importancia}, indicó que atributos como el promedio general, las ausencias y variables relacionadas con el compromiso académico poseen un papel central en la predicción de la clase de desempeño. Esto respalda la pertinencia de incluir técnicas de procesamiento y análisis de atributos, tal como se sugirió en las instrucciones y en la explicación oral del profesor.
+
+\section{Conclusiones}
+Se resolvió satisfactoriamente un problema de clasificación del desempeño académico estudiantil a partir del conjunto de datos propuesto. El MLP principal cumplió con la arquitectura requerida y logró un desempeño alto. Sin embargo, el modelo comparativo \textit{Random Forest}, seleccionado y fundamentado a partir de la literatura, obtuvo el mejor resultado final.
+
+Los hallazgos muestran que la combinación de preprocesamiento adecuado, partición estratificada, búsqueda de hiperparámetros y análisis de atributos relevantes es determinante para lograr un modelo sólido. Además, el estudio confirma la utilidad de comparar un enfoque de aprendizaje profundo con un método clásico de aprendizaje automático en datos tabulares.
+
+\begin{thebibliography}{00}
+\bibitem{ieeeaccess} M. R. Islam, M. T. Islam, S. Nooruddin y otros, ``Student's performance analysis and prediction using deep learning,'' \textit{IEEE Access}, doi: 10.1109/ACCESS.2021.3119596.
+\bibitem{dropout} N. Srivastava, G. Hinton, A. Krizhevsky, I. Sutskever y R. Salakhutdinov, ``Dropout: A simple way to prevent neural networks from overfitting,'' \textit{Journal of Machine Learning Research}, vol. 15, pp. 1929--1958, 2014.
+\bibitem{rf1} K. M. Aulck, N. Velagapudi, J. Blumenstock y J. West, ``Predicting student dropout in higher education,'' \textit{Applied Sciences}, 2023.
+\bibitem{rf2} M. Costa e Silva, A. Fonseca y C. Leal, ``Supervised machine learning algorithms for predicting student dropout and academic success: a comparative study,'' \textit{Discover Education}, 2023.
+\bibitem{rf3} A. M. Rizk y A. M. El-Bakry, ``Using decision trees and random forest algorithms to predict and determine factors contributing to first-year university students' learning performance,'' \textit{Algorithms}, 2021.
+\end{thebibliography}
+
+\end{document}
