@@ -26,6 +26,9 @@ ENV/
 logs/
 outputs/
 
+# Evitar CSV duplicado/corrupto por exportación (locale)
+Student_performance_data _ - Student_performance_data _.csv
+
 # OS
 .DS_Store
 Thumbs.db

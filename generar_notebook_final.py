@@ -84,7 +84,12 @@ cells.append(
         "random.seed(SEED)\n"
         "np.random.seed(SEED)\n"
         "tf.random.set_seed(SEED)\n\n"
-        "BASE_DIR = Path.cwd()\n"
+        "CANDIDATE_DIRS = [\n"
+        "    Path.cwd(),\n"
+        "    Path('/home/dgx/UABC/RRNN/desercion_escolar'),\n"
+        "    Path('/Volumes/dgx/UABC/RRNN/desercion_escolar'),\n"
+        "]\n"
+        "BASE_DIR = next((p for p in CANDIDATE_DIRS if (p / 'Student_performance_data_clean.csv').exists()), Path.cwd())\n"
         "DATASET = BASE_DIR / 'Student_performance_data_clean.csv'\n"
         "TARGET = 'GradeClass'\n"
         "CONTINUOUS = ['Age', 'StudyTimeWeekly', 'Absences', 'GPA']\n"
@@ -103,7 +108,10 @@ cells.append(
         "}\n\n"
         "pd.set_option('display.max_columns', None)\n"
         "pd.set_option('display.width', 160)\n"
-        "sns.set_theme(style='whitegrid', palette='deep')"
+        "sns.set_theme(style='whitegrid', palette='deep')\n"
+        "print('BASE_DIR =', BASE_DIR)\n"
+        "print('DATASET =', DATASET)\n"
+        "print('Existe dataset =', DATASET.exists())"
     )
 )
 
@@ -136,6 +144,7 @@ cells.append(
         "ax.set_xlabel('Clase')\n"
         "ax.set_ylabel('Cantidad de estudiantes')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'grafica_distribucion_clases.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -147,6 +156,7 @@ cells.append(
         "    sns.histplot(df[col], bins=20, kde=True, ax=ax, color='#2E86AB')\n"
         "    ax.set_title(f'Distribución de {col}')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'graficas_distribucion_variables_continuas.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -159,6 +169,7 @@ cells.append(
         "sns.heatmap(corr, cmap='coolwarm', center=0, annot=False)\n"
         "plt.title('Matriz de correlación')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'matriz_correlacion.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -170,6 +181,7 @@ cells.append(
         "    sns.boxplot(data=df, x=TARGET, y=col, hue=TARGET, dodge=False, legend=False, ax=ax, palette='Set2')\n"
         "    ax.set_title(f'{col} por clase')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'boxplots_variables_por_clase.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -314,7 +326,77 @@ cells.append(
         "axes[1].set_xlabel('Época')\n"
         "axes[1].legend()\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'curvas_entrenamiento_mlp.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
+    )
+)
+
+cells.append(md("## 6.1 Diagrama de la arquitectura del MLP principal"))
+
+cells.append(
+    code(
+        "def draw_network_mlp_examen(input_dim: int, num_classes: int):\n"
+        "    fig, ax = plt.subplots(figsize=(15, 7), facecolor='#f7f7f7')\n"
+        "    ax.set_facecolor('#f7f7f7')\n"
+        "    ax.axis('off')\n\n"
+        "    xp = {'input': 0, 'dense1': 2, 'dense2': 4, 'dense3': 6, 'dense4': 8, 'output': 10}\n"
+        "    colors = {\n"
+        "        'input': '#6C5CE7',\n"
+        "        'dense1': '#E84393',\n"
+        "        'dense2': '#F39C12',\n"
+        "        'dense3': '#2ECC71',\n"
+        "        'dense4': '#E74C3C',\n"
+        "        'output': '#D4A017',\n"
+        "    }\n"
+        "    labels = {\n"
+        "        'input': f'Entrada\\n({input_dim} variables)',\n"
+        "        'dense1': 'Densa + ReLU\\nDropout(0.2)',\n"
+        "        'dense2': 'Densa + ReLU\\nDropout(0.2)',\n"
+        "        'dense3': 'Densa + ReLU\\nDropout(0.2)',\n"
+        "        'dense4': 'Densa + ReLU\\nDropout(0.2)',\n"
+        "        'output': f'Salida\\n{num_classes}, Softmax',\n"
+        "    }\n"
+        "    sizes = {'input': str(input_dim), 'dense1': '200', 'dense2': '200', 'dense3': '150', 'dense4': '200', 'output': str(num_classes)}\n"
+        "    y_nodes = [4.5, 3.5, 2.5, 1.5, 0.5]\n\n"
+        "    def draw_column(x, color):\n"
+        "        for y in y_nodes:\n"
+        "            circ = plt.Circle((x, y), 0.18, color=color, ec='white', lw=2, alpha=0.95)\n"
+        "            ax.add_patch(circ)\n"
+        "        ax.text(x, 2.0, '⋯', ha='center', va='center', fontsize=18, color='#777777')\n\n"
+        "    def connect_columns(x1, x2):\n"
+        "        for y1 in y_nodes:\n"
+        "            for y2 in y_nodes:\n"
+        "                ax.plot([x1 + 0.18, x2 - 0.18], [y1, y2], color='#cccccc', lw=0.8, alpha=0.35, zorder=0)\n\n"
+        "    order = ['input', 'dense1', 'dense2', 'dense3', 'dense4', 'output']\n"
+        "    for left, right in zip(order[:-1], order[1:]):\n"
+        "        connect_columns(xp[left], xp[right])\n"
+        "    for key in order:\n"
+        "        draw_column(xp[key], colors[key])\n"
+        "        ax.text(\n"
+        "            xp[key], 5.5, labels[key],\n"
+        "            ha='center', va='center', fontsize=10, fontweight='bold', color='white',\n"
+        "            bbox=dict(boxstyle='round,pad=0.35', facecolor=colors[key], edgecolor='none', alpha=0.95)\n"
+        "        )\n"
+        "        ax.text(\n"
+        "            xp[key], -0.1, f'n = {sizes[key]}',\n"
+        "            ha='center', fontsize=8, color='#555555',\n"
+        "            bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor=colors[key], alpha=0.9)\n"
+        "        )\n\n"
+        "    edge_labels = [('input', 'dense1', '$W_1, b_1$'), ('dense1', 'dense2', '$W_2, b_2$'), ('dense2', 'dense3', '$W_3, b_3$'), ('dense3', 'dense4', '$W_4, b_4$'), ('dense4', 'output', '$W_5, b_5$')]\n"
+        "    for left, right, txt in edge_labels:\n"
+        "        xm = (xp[left] + xp[right]) / 2\n"
+        "        ax.text(xm, 4.95, txt, ha='center', va='bottom', fontsize=9, color='#666666')\n\n"
+        "    ax.set_title(\n"
+        "        f'Arquitectura del MLP principal del examen ({input_dim} → 200 → 200 → 150 → 200 → {num_classes})',\n"
+        "        fontsize=14, fontweight='bold', pad=14, color='#222222'\n"
+        "    )\n"
+        "    ax.set_xlim(-0.7, 10.7)\n"
+        "    ax.set_ylim(-0.5, 6.1)\n"
+        "    plt.tight_layout()\n"
+        "    plt.savefig(BASE_DIR / 'arquitectura_mlp_principal.png', dpi=160, bbox_inches='tight', facecolor=fig.get_facecolor())\n"
+        "    plt.show()\n"
+        "    print('Diagrama guardado en:', BASE_DIR / 'arquitectura_mlp_principal.png')\n\n"
+        "draw_network_mlp_examen(X_train_mlp.shape[1], len(np.unique(y_train)))"
     )
 )
 
@@ -322,12 +404,24 @@ cells.append(
     code(
         "plt.figure(figsize=(10, 4))\n"
         "top_mlp = mlp_search_df.head(10).copy()\n"
-        "top_mlp['config'] = top_mlp['optimizer'] + ' | lr=' + top_mlp['learning_rate'].astype(str) + ' | lote=' + top_mlp['batch_size'].astype(str)\n"
-        "sns.barplot(data=top_mlp, x='val_f1_macro', y='config', color='#4C78A8')\n"
+        "top_mlp = top_mlp.rename(columns={\n"
+        "    'optimizer': 'optimizador',\n"
+        "    'learning_rate': 'tasa_aprendizaje',\n"
+        "    'batch_size': 'tamano_lote',\n"
+        "    'epochs': 'epocas_solicitadas',\n"
+        "    'epochs_ran': 'epocas_ejecutadas',\n"
+        "    'val_accuracy': 'exactitud_validacion',\n"
+        "    'val_f1_macro': 'puntaje_f1_macro_validacion',\n"
+        "    'val_recall_macro': 'sensibilidad_macro_validacion',\n"
+        "    'val_loss': 'perdida_validacion',\n"
+        "})\n"
+        "top_mlp['configuracion'] = top_mlp['optimizador'] + ' | tasa=' + top_mlp['tasa_aprendizaje'].astype(str) + ' | lote=' + top_mlp['tamano_lote'].astype(str)\n"
+        "sns.barplot(data=top_mlp, x='puntaje_f1_macro_validacion', y='configuracion', color='#4C78A8')\n"
         "plt.title('Mejores configuraciones del MLP según puntaje F1 macro en validación')\n"
         "plt.xlabel('Puntaje F1 macro')\n"
         "plt.ylabel('Configuración')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'comparacion_hiperparametros_mlp.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -366,16 +460,26 @@ cells.append(
     code(
         "plt.figure(figsize=(10, 4))\n"
         "top_rf = rf_search_df.head(10).copy()\n"
-        "top_rf['config'] = (\n"
-        "    'árboles=' + top_rf['n_estimators'].astype(str)\n"
-        "    + ' | prof=' + top_rf['max_depth'].astype(str)\n"
-        "    + ' | hoja=' + top_rf['min_samples_leaf'].astype(str)\n"
+        "top_rf = top_rf.rename(columns={\n"
+        "    'n_estimators': 'numero_arboles',\n"
+        "    'max_depth': 'profundidad_maxima',\n"
+        "    'min_samples_leaf': 'min_muestras_hoja',\n"
+        "    'class_weight': 'peso_clase',\n"
+        "    'val_accuracy': 'exactitud_validacion',\n"
+        "    'val_f1_macro': 'puntaje_f1_macro_validacion',\n"
+        "    'val_recall_macro': 'sensibilidad_macro_validacion',\n"
+        "})\n"
+        "top_rf['configuracion'] = (\n"
+        "    'árboles=' + top_rf['numero_arboles'].astype(str)\n"
+        "    + ' | prof=' + top_rf['profundidad_maxima'].astype(str)\n"
+        "    + ' | hoja=' + top_rf['min_muestras_hoja'].astype(str)\n"
         ")\n"
-        "sns.barplot(data=top_rf, x='val_f1_macro', y='config', color='#59A14F')\n"
+        "sns.barplot(data=top_rf, x='puntaje_f1_macro_validacion', y='configuracion', color='#59A14F')\n"
         "plt.title('Mejores configuraciones de Random Forest según puntaje F1 macro en validación')\n"
         "plt.xlabel('Puntaje F1 macro')\n"
         "plt.ylabel('Configuración')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'comparacion_hiperparametros_random_forest.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -395,7 +499,7 @@ cells.append(
         "])\n"
         "comparison_df = comparison_df.rename(columns={\n"
         "    'accuracy': 'exactitud',\n"
-        "    'precision_macro': 'precision_macro',\n"
+        "    'precision_macro': 'precisión_macro',\n"
         "    'recall_macro': 'sensibilidad_macro',\n"
         "    'f1_macro': 'puntaje_f1_macro',\n"
         "})\n"
@@ -430,6 +534,7 @@ cells.append(
         "axes[1].set_xlabel('Clase predicha')\n"
         "axes[1].set_ylabel('Clase real')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'matrices_confusion_comparadas.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -438,7 +543,13 @@ cells.append(md("## 10. Comparación visual de métricas"))
 
 cells.append(
     code(
-        "plot_df = comparison_df.melt(id_vars=['modelo', 'mejor_configuracion'], value_vars=['exactitud', 'precision_macro', 'sensibilidad_macro', 'puntaje_f1_macro'], var_name='metrica', value_name='valor')\n"
+        "plot_df = comparison_df.melt(id_vars=['modelo', 'mejor_configuracion'], value_vars=['exactitud', 'precisión_macro', 'sensibilidad_macro', 'puntaje_f1_macro'], var_name='metrica', value_name='valor')\n"
+        "plot_df['metrica'] = plot_df['metrica'].replace({\n"
+        "    'exactitud': 'Exactitud',\n"
+        "    'precisión_macro': 'Precisión macro',\n"
+        "    'sensibilidad_macro': 'Sensibilidad macro',\n"
+        "    'puntaje_f1_macro': 'Puntaje F1 macro',\n"
+        "})\n"
         "plt.figure(figsize=(10, 5))\n"
         "sns.barplot(data=plot_df, x='metrica', y='valor', hue='modelo')\n"
         "plt.ylim(0, 1.0)\n"
@@ -446,6 +557,7 @@ cells.append(
         "plt.xlabel('Métrica')\n"
         "plt.ylabel('Valor')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'comparacion_metricas_modelos.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -463,6 +575,7 @@ cells.append(
         "plt.xlabel('Importancia')\n"
         "plt.ylabel('Variable')\n"
         "plt.tight_layout()\n"
+        "plt.savefig(BASE_DIR / 'importancia_variables_random_forest.png', dpi=200, bbox_inches='tight')\n"
         "plt.show()"
     )
 )
@@ -493,7 +606,24 @@ cells.append(
         "plt.tight_layout()\n"
         "plt.savefig(BASE_DIR / 'confusion_matrix_random_forest_final.png', dpi=200)\n"
         "plt.close(fig)\n\n"
-        "print('Archivos actualizados en:', BASE_DIR)"
+        "print('Archivos actualizados en:', BASE_DIR)\n"
+        "print('Gráficos exportados:')\n"
+        "for file_name in [\n"
+        "    'grafica_distribucion_clases.png',\n"
+        "    'graficas_distribucion_variables_continuas.png',\n"
+        "    'matriz_correlacion.png',\n"
+        "    'boxplots_variables_por_clase.png',\n"
+        "    'arquitectura_mlp_principal.png',\n"
+        "    'curvas_entrenamiento_mlp.png',\n"
+        "    'comparacion_hiperparametros_mlp.png',\n"
+        "    'comparacion_hiperparametros_random_forest.png',\n"
+        "    'matrices_confusion_comparadas.png',\n"
+        "    'comparacion_metricas_modelos.png',\n"
+        "    'importancia_variables_random_forest.png',\n"
+        "    'confusion_matrix_mlp_final.png',\n"
+        "    'confusion_matrix_random_forest_final.png',\n"
+        "]:\n"
+        "    print(BASE_DIR / file_name)"
     )
 )
 
