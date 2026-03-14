@@ -9,11 +9,12 @@
 \usepackage{url}
 \usepackage{amsmath}
 \usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
 
 \title{Modelado predictivo del rendimiento estudiantil mediante técnicas de Machine Learning}
 
 \author{
-\IEEEauthorblockN{Ramon Aguilera Ruben \and Torres Laveaga Manuel}
+\IEEEauthorblockN{Ramos Aguilera Rubén \and Torres Laveaga Manuel}
 \IEEEauthorblockA{ \\ }
 }
 
@@ -24,7 +25,7 @@
 \raggedbottom
 
 \begin{abstract}
-Este trabajo aborda un problema de clasificación supervisada para predecir el desempeño académico de estudiantes de preparatoria. Consideramos variables como datos demográficos, hábitos de estudio, apoyo parental, actividades extracurriculares y promedio general. Como modelo principal, implementamos una red neuronal multicapa (MLP) con la arquitectura especificada en el enunciado. Además, usamos un clasificador \textit{Random Forest} como modelo comparativo, basado en literatura previa sobre predicción de desempeño académico y deserción escolar.
+Este trabajo aborda un problema de clasificación supervisada para predecir el desempeño académico de estudiantes de preparatoria. Consideramos variables como datos demográficos, hábitos de estudio, apoyo parental, actividades extracurriculares y promedio general. Como modelo principal, implementamos una red neuronal multicapa (MLP) con la arquitectura adoptada para el estudio. Además, usamos un clasificador \textit{Random Forest} como modelo comparativo, basado en literatura previa sobre predicción de desempeño académico y deserción escolar.
 
 El proceso incluyó preprocesamiento de datos, partición estratificada, búsqueda de hiperparámetros y evaluación con métricas de clasificación. También analizamos los resultados usando matrices de confusión normalizadas e importancia de variables. Los resultados indican que ambos modelos lograron un desempeño competitivo, aunque \textit{Random Forest} obtuvo el mejor resultado final en el conjunto de prueba.
 
@@ -107,7 +108,7 @@ En este trabajo, se utilizó la función de activación ReLU (\textit{Rectified 
 
 \subsection{Dropout}
 
-La técnica \textit{Dropout}~\cite{dropout} desactiva aleatoriamente una fracción de neuronas durante cada paso de entrenamiento. Esto obliga al modelo a aprender representaciones distribuidas, reduciendo la coadaptación excesiva entre neuronas y mejorando su capacidad de generalización. En este trabajo, aplicamos \textit{Dropout} con una tasa de 0.2 después de cada capa oculta, siguiendo la arquitectura especificada en el enunciado.
+La técnica \textit{Dropout}~\cite{dropout} desactiva aleatoriamente una fracción de neuronas durante cada paso de entrenamiento. Esto obliga al modelo a aprender representaciones distribuidas, reduciendo la coadaptación excesiva entre neuronas y mejorando su capacidad de generalización. En este trabajo, aplicamos \textit{Dropout} con una tasa de 0.2 después de cada capa oculta, siguiendo la arquitectura adoptada para el estudio.
 
 \subsection{Softmax}
 
@@ -140,7 +141,9 @@ Las métricas macro otorgan el mismo peso a cada clase, independientemente de su
 
 Para este análisis, se utilizó el \textit{Student Performance Dataset}, que contiene 2392 registros y 15 columnas. Las variables incluyen edad, género, etnicidad, educación de los padres, tiempo de estudio semanal, ausencias, tutorías, apoyo de los padres, actividades extracurriculares, deportes, música, voluntariado, promedio general y clase de desempeño académico.
 
-Como parte del preprocesamiento, verificamos la integridad del archivo y confirmamos que no había valores nulos. También eliminamos atributos que no tenían un valor predictivo directo, como \texttt{StudentID}. Las variables categóricas ya estaban codificadas numéricamente en el conjunto de datos, por lo que no fue necesario realizar ninguna transformación adicional. Dado que el enunciado no prohíbe explícitamente el uso de \texttt{GPA}, decidimos trabajar con el conjunto completo de atributos para el escenario principal del reporte.
+Como parte del preprocesamiento, verificamos la integridad del archivo y confirmamos que no había valores nulos. También eliminamos atributos que no tenían un valor predictivo directo, como \texttt{StudentID}. Dado que el escenario principal del estudio considera el conjunto completo de atributos disponibles, decidimos trabajar con la variante que incluye \texttt{GPA}.
+
+Para el MLP principal, las variables categóricas se representaron inicialmente mediante \textit{one-hot encoding}, con el fin de evitar relaciones ordinales artificiales entre categorías nominales. A partir de una revisión posterior del esquema de preprocesamiento del MLP, se consideró pertinente verificar si esta representación era la opción más adecuada para el problema. Con ese fin, se evaluó de manera exploratoria una variante con embeddings, con el propósito de contrastar ambas representaciones bajo el mismo escenario principal y sin modificar el resto de las condiciones experimentales.
 
 \subsection{Partición estratificada}
 
@@ -150,7 +153,7 @@ La búsqueda de hiperparámetros se realizó utilizando el subconjunto de valida
 
 \subsection{Selección de modelos}
 
-La elección de los dos modelos evaluados en este trabajo se basa en criterios distintos pero complementarios. El modelo principal, una red neuronal multicapa (MLP), se seleccionó como condición inicial del proyecto. Su arquitectura específica se basó en el trabajo de Islam \textit{et al.}~\cite{ieeeaccess}, adaptando la capa de entrada al número de atributos del dataset actual y la capa de salida al número de clases del problema.
+La elección de los dos modelos evaluados en este trabajo se basa en criterios distintos pero complementarios. El modelo principal, una red neuronal multicapa (MLP), se adoptó como modelo base del estudio. Su arquitectura específica se basó en el trabajo de Islam \textit{et al.}~\cite{ieeeaccess}, adaptando la capa de entrada al número de atributos del dataset actual y la capa de salida al número de clases del problema.
 
 Por otro lado, la selección de \textit{Random Forest} como modelo comparativo se debe a la evidencia convergente en la literatura. Rizk y El-Bakry~\cite{rf_algorithms} y Altabraweh \textit{et al.}~\cite{rf_advising} demostraron su efectividad en problemas de predicción de desempeño estudiantil con datos tabulares similares al dataset utilizado. Además, Costa e Silva \textit{et al.}~\cite{rf_dropout_review} y Ahad \textit{et al.}~\cite{rf_mooc} mostraron su robustez en problemas de deserción y abandono escolar. Adicionalmente, \textit{Random Forest} ofrece estimación directa de importancia de variables, lo que permite enriquecer el análisis interpretativo más allá de las métricas de clasificación.
 
@@ -161,6 +164,89 @@ El modelo principal fue una red neuronal multicapa con una arquitectura específ
 La primera capa oculta constaba de 200 neuronas con activación ReLU, seguida de una capa de \textit{Dropout} con una tasa de 0.2. La segunda capa oculta también tenía 200 neuronas con activación ReLU y una capa de \textit{Dropout} con una tasa de 0.2. La tercera capa oculta contenía 150 neuronas con activación ReLU y una capa de \textit{Dropout} con una tasa de 0.2. La cuarta capa oculta tenía 200 neuronas con activación ReLU y una capa de \textit{Dropout} con una tasa de 0.2.
 
 La capa de entrada se ajustó para adaptarse al número de atributos del dataset, mientras que la capa de salida se ajustó para adaptarse al número de clases, utilizando activación \textit{softmax}. La función de pérdida utilizada fue entropía cruzada categórica.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{
+    nodecircle/.style={circle, minimum size=6mm, inner sep=0pt, draw=white, line width=0.9pt},
+    labelfill/.style={rounded corners=2pt, inner sep=3pt, font=\scriptsize\bfseries, text=white},
+    infobox/.style={rounded corners=2pt, inner sep=3pt, font=\scriptsize, fill=white, text=black}
+  }
+
+  \definecolor{inputc}{HTML}{5B5CE2}
+  \definecolor{denseone}{HTML}{E64980}
+  \definecolor{densetwo}{HTML}{F39C12}
+  \definecolor{densethree}{HTML}{2FBF71}
+  \definecolor{densefour}{HTML}{E95B4A}
+  \definecolor{outputc}{HTML}{C99A06}
+
+  \foreach \x/\name in {0/inputc,1.9/denseone,3.8/densetwo,5.7/densethree,7.6/densefour,9.5/outputc}{
+    \foreach \y in {2.9,2.1,0.7,-0.1}{
+      \filldraw[\name] (\x,\y) circle (0.14);
+    }
+    \node[font=\small, text=gray] at (\x,1.35) {$\cdots$};
+  }
+
+  \foreach \xleft/\xright in {0/1.9,1.9/3.8,3.8/5.7,5.7/7.6,7.6/9.5}{
+    \foreach \yl in {2.9,2.1,0.7,-0.1}{
+      \foreach \yr in {2.9,2.1,0.7,-0.1}{
+        \draw[gray!30, line width=0.2pt] (\xleft+0.14,\yl) -- (\xright-0.14,\yr);
+      }
+    }
+  }
+
+  \node[labelfill, fill=inputc] at (0,4.0) {Entrada};
+  \node[labelfill, fill=denseone] at (1.9,4.0) {Oculta 1};
+  \node[labelfill, fill=densetwo] at (3.8,4.0) {Oculta 2};
+  \node[labelfill, fill=densethree] at (5.7,4.0) {Oculta 3};
+  \node[labelfill, fill=densefour] at (7.6,4.0) {Oculta 4};
+  \node[labelfill, fill=outputc] at (9.5,4.0) {Salida};
+
+  \node[infobox, draw=inputc] at (0,-0.95) {30 variables};
+  \node[infobox, draw=denseone, align=center] at (1.9,-0.95) {200 neuronas\\ReLU + Dropout};
+  \node[infobox, draw=densetwo, align=center] at (3.8,-0.95) {200 neuronas\\ReLU + Dropout};
+  \node[infobox, draw=densethree, align=center] at (5.7,-0.95) {150 neuronas\\ReLU + Dropout};
+  \node[infobox, draw=densefour, align=center] at (7.6,-0.95) {200 neuronas\\ReLU + Dropout};
+  \node[infobox, draw=outputc, align=center] at (9.5,-0.95) {5 clases\\Softmax};
+
+  \node[font=\small\bfseries, align=center] at (4.75,5.0) {Arquitectura del MLP principal};
+  \node[font=\scriptsize, text=gray!70!black, align=center] at (4.75,4.55) {30 $\rightarrow$ 200 $\rightarrow$ 200 $\rightarrow$ 150 $\rightarrow$ 200 $\rightarrow$ 5 \quad con \textit{Dropout}(0.2)};
+\end{tikzpicture}
+}
+\caption{Arquitectura del MLP principal utilizada en el experimento.}
+\label{fig:mlp}
+\end{figure}
+
+La Figura~\ref{fig:mlp} representa visualmente la arquitectura del modelo principal: capa de entrada, cuatro capas densas con activación ReLU y \textit{Dropout}(0.2), y capa de salida con cinco neuronas y activación \textit{softmax}.
+
+\subsection{Estructura del Random Forest comparativo}
+
+A diferencia del MLP, \textit{Random Forest} no se organiza por capas, sino por un ensamble de árboles de decisión. En este trabajo, el modelo comparativo se definió como un clasificador supervisado multiclase cuya estructura depende del número de árboles, la profundidad máxima permitida, el tamaño mínimo de hoja y la ponderación de clases. Por ello, en lugar de una arquitectura neuronal, su descripción metodológica debe entenderse como una configuración de ensamble.
+
+\begin{table}[htbp]
+\centering
+\caption{Estructura metodológica del Random Forest comparativo}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.8cm}p{4.4cm}}
+\toprule
+Elemento & Descripción \\
+\midrule
+Tipo de modelo & Ensamble supervisado basado en árboles \\
+Unidad estructural & Árbol de decisión \\
+Capas & No aplica \\
+Salida & Predicción multiclase por votación \\
+Complejidad del modelo & Determinada por número de árboles, profundidad y tamaño mínimo de hoja \\
+Ventaja metodológica & Robustez en datos tabulares e interpretación por importancia de variables \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:rf_estructura}
+\end{table}
+
+La Tabla~\ref{tab:rf_estructura} resume esta diferencia fundamental: mientras el MLP aprende mediante transformaciones sucesivas en capas densas, \textit{Random Forest} aprende mediante múltiples particiones del espacio de entrada construidas por los árboles del ensamble. Esta distinción es importante para la comparación entre modelos, ya que ambos resuelven la misma tarea de clasificación, pero su forma de representar y aprender patrones es estructuralmente distinta.
 
 \subsection{Búsqueda de hiperparámetros --- MLP}
 
@@ -174,11 +260,34 @@ La configuración ganadora, que logró el mejor equilibrio entre desempeño y es
 
 Para \textit{Random Forest} se evaluaron 108 combinaciones de hiperparámetros, variando número de árboles (200, 400 y 700), profundidad máxima (10, 20, 30 o sin límite), peso por clase (\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}) y tamaño mínimo de hoja (1, 2 y 4). El criterio de selección fue el puntaje F1 macro sobre el subconjunto de validación.
 
-\subsection{Escenario complementario de alerta temprana}
+\subsection{Ingeniería de variables para alerta temprana}
 
-Además del escenario principal con el conjunto completo de atributos, se construyó un escenario complementario orientado a caracterización temprana del estudiante. En esta variante se excluyó \texttt{GPA}, dado que forma parte del resultado académico ya observado y no de la información disponible al inicio del seguimiento. El propósito fue aproximar una lectura más predictiva del problema, centrada en variables demográficas, hábitos de estudio, acompañamiento familiar y participación escolar.
+Además del escenario principal con el conjunto completo de atributos, se construyó una variante metodológica orientada a caracterización temprana del estudiante. Esta variante no define un modelo nuevo con capas o con otra salida, sino una forma distinta de representar la entrada del problema. En ella se excluyó \texttt{GPA}, dado que forma parte del resultado académico ya observado y no de la información disponible al inicio del seguimiento. El propósito fue aproximar una lectura más predictiva, centrada en variables demográficas, hábitos de estudio, acompañamiento familiar y participación escolar.
 
-Sobre ese conjunto base se aplicó ingeniería de variables para construir atributos derivados con significado conductual. Entre los más relevantes se incluyeron \texttt{StudyTimePerAbsence}, \texttt{AcademicEngagementScore}, \texttt{SupportActivityInteraction}, \texttt{SupportTutoringInteraction} y \texttt{ActivityCount}. Estas transformaciones buscaron representar de forma más informativa la relación entre dedicación, ausentismo, tutorías y apoyo parental. El escenario sin \texttt{GPA} se evaluó principalmente con \textit{Random Forest}, ya que en las pruebas comparativas resultó más estable que las variantes MLP bajo este conjunto de atributos.
+Sobre ese conjunto base se aplicó ingeniería de variables para construir atributos derivados con significado conductual. Entre los más relevantes se incluyeron \texttt{StudyTimePerAbsence}, \texttt{AcademicEngagementScore}, \texttt{SupportActivityInteraction}, \texttt{SupportTutoringInteraction} y \texttt{ActivityCount}. Estas transformaciones buscaron representar de forma más informativa la relación entre dedicación, ausentismo, tutorías y apoyo parental. En términos metodológicos, la ingeniería de variables actuó como una etapa de enriquecimiento de la representación de entrada, no como un clasificador alternativo. El escenario sin \texttt{GPA} se evaluó principalmente con \textit{Random Forest}, ya que en las pruebas comparativas resultó más estable que las variantes MLP bajo este conjunto de atributos.
+
+\begin{table}[htbp]
+\centering
+\caption{Estructura del escenario de ingeniería de variables}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.8cm}p{4.4cm}}
+\toprule
+Elemento & Descripción \\
+\midrule
+Base de entrada & 12 atributos demográficos, de hábitos y apoyo \\
+Atributos derivados & 5 atributos construidos manualmente \\
+Total de atributos & 17 \\
+Arquitectura por capas & No aplica a la ingeniería de variables \\
+Clasificador principal asociado & \textit{Random Forest} \\
+Propósito & Aproximar una lectura predictiva y de alerta temprana sin \texttt{GPA} \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:ingenieria_estructura}
+\end{table}
+
+La Tabla~\ref{tab:ingenieria_estructura} aclara el lugar metodológico de esta variante dentro del estudio. La ingeniería de variables no compite con el MLP ni con \textit{Random Forest} como si fuera un tercer modelo independiente; más bien redefine el espacio de entrada sobre el que luego aprende un clasificador. En este trabajo, su uso más exitoso fue en combinación con \textit{Random Forest}, lo que permitió trasladar el problema desde la clasificación del desempeño observado hacia una aproximación de alerta temprana sustentada en información conductual y contextual.
 
 \subsection{Recursos de cómputo y software}
 
@@ -186,13 +295,11 @@ Los experimentos se realizaron en Ubuntu Linux 6.17 con Python 3.12.3 y CUDA 13.
 
 \subsection{Costo computacional}
 
-El costo computacional juega un papel importante en la comprensión del proceso experimental. Se evaluaron 81 configuraciones de MLP combinando tres optimizadores (\texttt{Adam}, \texttt{RMSprop} y \texttt{SGD}), tres tamaños de lote (32, 64 y 128), tres tasas de aprendizaje (0.0001, 0.0005 y 0.001) y tres épocas máximas (50, 100 y 150). Aunque el presupuesto teórico total de entrenamiento era de 8100 épocas, la detención temprana resultó en la ejecución de solo 5585 épocas.
+Se evaluaron 81 configuraciones de MLP combinando tres optimizadores (\texttt{Adam}, \texttt{RMSprop} y \texttt{SGD}), tres tamaños de lote (32, 64 y 128), tres tasas de aprendizaje (0.0001, 0.0005 y 0.001) y tres épocas máximas (50, 100 y 150). Aunque el presupuesto teórico total de entrenamiento era de 8100 épocas, la detención temprana resultó en la ejecución de solo 5585 épocas.
 
-Para \textit{Random Forest}, se evaluaron 108 combinaciones de hiperparámetros, incluyendo números de árboles (200, 400 y 700), profundidades máximas (10, 20, 30 o sin límite), pesos por clase (\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}) y tamaños mínimos de hoja (1, 2 y 4). Documentar este costo computacional subraya que el resultado final no fue producto del azar, sino de una exploración computacional exhaustiva.
+Para \textit{Random Forest}, se evaluaron 108 combinaciones de hiperparámetros, incluyendo números de árboles (200, 400 y 700), profundidades máximas (10, 20, 30 o sin límite), pesos por clase (\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}) y tamaños mínimos de hoja (1, 2 y 4).
 
-Además, se midió el tiempo real de ejecución de la corrida final completa utilizando la herramienta \texttt{/usr/bin/time}.
-
-El script \texttt{script\_final\_reporte.py}, que abarcó la búsqueda de hiperparámetros tanto para MLP como para \textit{Random Forest}, requirió 581.99 segundos (9.70 minutos) de tiempo de pared. El registro del sistema reportó 813.50 segundos de tiempo de usuario y 109.02 segundos de tiempo de sistema. Esto demuestra que la experimentación final fue factible en una sola sesión, pero al mismo tiempo lo suficientemente extensa como para justificar una exploración rigurosa.
+Además, se midió el tiempo real de ejecución de la corrida experimental final. La búsqueda de hiperparámetros y evaluación conjunta de MLP y \textit{Random Forest} requirió 581.99 segundos (9.70 minutos) de tiempo de pared. El registro del sistema reportó 813.50 segundos de tiempo de usuario y 109.02 segundos de tiempo de sistema.
 
 \section{Resultados}\label{sec:resultados}
 
@@ -234,23 +341,7 @@ La Figura~\ref{fig:corr} resume las relaciones lineales entre pares de variables
 
 La Figura~\ref{fig:boxplots} complementa la matriz de correlación al mostrar cómo cambian la mediana y la dispersión de cada variable continua a lo largo de las clases. Las ausencias aumentan progresivamente conforme empeora la clase, mientras que el promedio general disminuye. La edad permanece estable entre clases, confirmando su baja capacidad discriminativa.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\linewidth]{arquitectura_mlp_principal.png}
-\caption{Arquitectura del MLP principal utilizada en el experimento.}
-\label{fig:mlp}
-\end{figure}
-
-La Figura~\ref{fig:mlp} representa visualmente la arquitectura del modelo principal: capa de entrada, cuatro capas densas con activación ReLU y \textit{Dropout}(0.2), y capa de salida con cinco neuronas y activación \textit{softmax}.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_mlp.png}
-\caption{Comparación de hiperparámetros evaluados para el MLP principal.}
-\label{fig:busqueda_mlp}
-\end{figure}
-
-La Figura~\ref{fig:busqueda_mlp} documenta la exploración de hiperparámetros del MLP. Se observa que las configuraciones con \texttt{Adam} y una tasa de aprendizaje de 0.0001 concentran los mejores valores. El MLP con validación cruzada F1 macro muestra un aprendizaje más estable, mientras que \texttt{SGD} con tasas de aprendizaje más altas presenta mayor variabilidad en los resultados.
+En la exploración de hiperparámetros del MLP, las configuraciones con \texttt{Adam} y una tasa de aprendizaje de 0.0001 concentraron los mejores resultados. En contraste, \texttt{SGD} con tasas de aprendizaje más altas mostró una variabilidad mayor, lo que reforzó la selección final del esquema de entrenamiento utilizado para el modelo principal.
 
 \begin{figure}[htbp]
 \centering
@@ -261,33 +352,56 @@ La Figura~\ref{fig:busqueda_mlp} documenta la exploración de hiperparámetros d
 
 La Figura~\ref{fig:curvas_mlp} ilustra la evolución del aprendizaje del mejor MLP. La curva de pérdida disminuye consistentemente en ambos subconjuntos, sin divergencia entre entrenamiento y validación. La curva de exactitud confirma una mejora sostenida y estable. La proximidad entre ambas curvas indica que el \textit{Dropout} cumplió eficazmente su función regulatoria.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\linewidth]{comparacion_hiperparametros_random_forest.png}
-\caption{Comparación de hiperparámetros evaluados para Random Forest.}
-\label{fig:busqueda_rf}
-\end{figure}
-
-La Figura~\ref{fig:busqueda_rf} muestra la exploración de hiperparámetros de \textit{Random Forest}. Las configuraciones con profundidad sin límite y tamaños mínimos de hoja pequeños tienden a concentrar los mejores resultados, aunque con diferencias marginales entre ellas.
+En \textit{Random Forest}, las configuraciones con profundidad sin límite y tamaños mínimos de hoja pequeños concentraron los mejores puntajes en validación, aunque con diferencias marginales entre varias combinaciones cercanas.
 
 \begin{table}[htbp]
 \centering
-\caption{Comparación cuantitativa final de modelos}
+\caption{Comparación cuantitativa de modelos en el escenario principal}
 \scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{2.2cm}cccc}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcccc}
 \toprule
-Modelo & Exactitud & Precisión macro & Sensibilidad macro & Puntaje F1 macro \\
+Modelo & Exactitud & \shortstack{Precisión\\macro} & \shortstack{Sensibilidad\\macro} & \shortstack{Puntaje F1\\macro} \\
 \midrule
 MLP principal & 0.8607 & 0.8270 & 0.7405 & 0.7643 \\
 Random Forest & 0.9331 & 0.9147 & 0.8363 & 0.8604 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \normalsize
 \label{tab:comparacion}
 \end{table}
 
-La Tabla~\ref{tab:comparacion} presenta la comparación cuantitativa principal. El MLP alcanzó una exactitud de 0.8607 y un puntaje F1 macro de 0.7643, un resultado sólido considerando la arquitectura fija requerida. \textit{Random Forest} superó al MLP en todas las métricas, alcanzando 0.9331 de exactitud y 0.8604 de F1 macro.
+La Tabla~\ref{tab:comparacion} presenta la comparación cuantitativa de modelos en el escenario principal del estudio, es decir, en la variante que utiliza el conjunto completo de atributos, incluyendo \texttt{GPA}. El MLP alcanzó una exactitud de 0.8607 y un puntaje F1 macro de 0.7643, un resultado sólido considerando la arquitectura definida para este estudio. \textit{Random Forest} superó al MLP en todas las métricas, alcanzando 0.9331 de exactitud y 0.8604 de F1 macro.
+
+\begin{table}[htbp]
+\centering
+\caption{Variantes de codificación categórica evaluadas para el MLP}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcc}
+\toprule
+Representación categórica & Exactitud & F1 macro \\
+\midrule
+\textit{One-hot encoding} & 0.8607 & 0.7643 \\
+Embeddings & 0.8997 & 0.7950 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:mlp_categoricas}
+\end{table}
+
+La Tabla~\ref{tab:mlp_categoricas} documenta una verificación adicional realizada sobre el escenario principal del MLP. Sin alterar la tarea, el conjunto de datos ni la arquitectura base, se contrastó la codificación categórica original mediante \textit{one-hot encoding} frente a una variante con embeddings. Esta comparación no modificó el planteamiento central del estudio, pero permitió comprobar que la representación categórica incidía de forma apreciable en el desempeño del modelo neuronal. La variante con embeddings mejoró al MLP original en exactitud y en puntaje F1 macro, aunque se mantuvo por debajo del rendimiento global alcanzado por \textit{Random Forest}. Por ello, esta comprobación se interpreta como una verificación metodológica adicional sobre la representación categórica del MLP, más que como una reformulación de la comparación principal entre modelos.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{cm_mlp_onehot_vs_embeddings_normalizada_columnas.png}
+\caption{Matrices de confusión normalizadas por columna para el MLP con \textit{one-hot encoding} y con embeddings.}
+\label{fig:confusiones_embeddings}
+\end{figure}
+
+La Figura~\ref{fig:confusiones_embeddings} añade soporte visual a esa verificación metodológica. Bajo normalización por columna, la variante con embeddings muestra salidas más puras en varias clases, especialmente en las categorías intermedias, lo que es consistente con la mejora observada en exactitud y puntaje F1 macro. De este modo, la comparación no queda restringida a una tabla de métricas, sino que también permite identificar cómo cambia la composición real de las predicciones del MLP cuando se modifica la representación categórica.
 
 \begin{figure}[htbp]
 \centering
@@ -298,16 +412,7 @@ La Tabla~\ref{tab:comparacion} presenta la comparación cuantitativa principal. 
 
 La Figura~\ref{fig:confusiones} muestra matrices de confusión normalizadas por columna, por lo que cada celda indica de qué clase real provienen las muestras que el modelo asignó a una clase predicha determinada. Esta lectura enfatiza la precisión por clase y permite observar con mayor claridad la pureza de cada salida del clasificador. En ambos modelos, la clase~4 concentra las predicciones más consistentes, mientras que la clase~0 sigue siendo la más difícil de sostener con alta pureza. La comparación también confirma que \textit{Random Forest} produce columnas más concentradas en la diagonal principal que el MLP, lo cual es coherente con su ventaja en las métricas globales.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.95\linewidth]{comparacion_metricas_modelos.png}
-\caption{Comparación de métricas entre modelos.}
-\label{fig:metricas}
-\end{figure}
-
-La Figura~\ref{fig:metricas} facilita la lectura comparativa del desempeño. La Figura~\ref{fig:importancia} y la Tabla~\ref{tab:importancia} muestran claramente que el \texttt{GPA} es, por mucho, la variable más influyente, con un valor de 0.4864. Le siguen las ausencias (0.2076) y el tiempo de estudio semanal (0.0904). Variables como la edad, el grupo étnico y la educación parental tienen una influencia mínima. Estos resultados se alinean con la lógica del problema: el desempeño académico previo y los hábitos de estudio son los predictores más directos de la calificación final.
-
-Random Forest supera al perceptrón multicapa (MLP) en varias métricas clave, incluyendo exactitud, precisión macro, sensibilidad macro y puntaje F1 macro. Esta superioridad constante en múltiples métricas refuerza la ventaja de \textit{Random Forest} sobre el MLP.
+La comparación de la Tabla~\ref{tab:comparacion} muestra que \textit{Random Forest} supera al perceptrón multicapa en exactitud, precisión macro, sensibilidad macro y puntaje F1 macro. La Figura~\ref{fig:importancia} y la Tabla~\ref{tab:importancia} complementan esa lectura al mostrar que el \texttt{GPA} es, por mucho, la variable más influyente, con un valor de 0.4864. Le siguen las ausencias (0.2076) y el tiempo de estudio semanal (0.0904), mientras que variables como la edad, el grupo étnico y la educación parental presentan una contribución mucho menor. Este patrón es coherente con la lógica del problema: el desempeño académico previo y los hábitos de estudio son los predictores más directos de la calificación final.
 
 \begin{figure}[htbp]
 \centering
@@ -368,7 +473,7 @@ La Tabla~\ref{tab:comparacion_sin_gpa} introduce el segundo eje del trabajo: la 
 \label{fig:confusiones_ingenieria}
 \end{figure}
 
-La Figura~\ref{fig:confusiones_ingenieria} complementa la Tabla~\ref{tab:comparacion_sin_gpa} al mostrar cómo cambia la pureza de las predicciones cuando se pasa del conjunto base a la representación con ingeniería de variables. Al estar normalizada por columna, la visual permite identificar con mayor precisión si las clases predichas se sostienen sobre muestras reales de la misma categoría o si están recibiendo mezcla de clases vecinas. La mejora introducida por \textit{ingeniería\_v1} no solo se expresa en exactitud y F1 macro: también se observa en una concentración más clara de varias columnas sobre su diagonal, lo que indica salidas más consistentes para un problema que ya no cuenta con la señal dominante de \texttt{GPA}.
+La Figura~\ref{fig:confusiones_ingenieria} complementa la Tabla~\ref{tab:comparacion_sin_gpa} al mostrar cómo cambia la pureza de las predicciones cuando se pasa del conjunto base a la representación con ingeniería de variables. Al estar normalizada por columna, la visual permite identificar con mayor precisión si las clases predichas se sostienen sobre muestras reales de la misma categoría o si están recibiendo mezcla de clases vecinas. La mejora introducida por el conjunto enriquecido de atributos no solo se expresa en exactitud y F1 macro: también se observa en una concentración más clara de varias columnas sobre su diagonal, lo que indica salidas más consistentes para un problema que ya no cuenta con la señal dominante de \texttt{GPA}.
 
 \begin{table}[htbp]
 \centering
@@ -379,7 +484,7 @@ La Figura~\ref{fig:confusiones_ingenieria} complementa la Tabla~\ref{tab:compara
 \toprule
 Estrategia & Exactitud & F1 macro \\
 \midrule
-Ingeniería de variables v1 & 0.7604 & 0.6039 \\
+Ingeniería de variables & 0.7604 & 0.6039 \\
 Ajuste de umbral & 0.7577 & 0.5974 \\
 Clasificación ordinal & 0.7493 & 0.5829 \\
 HistGradientBoosting & 0.7075 & 0.5584 \\
@@ -391,7 +496,7 @@ Clasificación en dos etapas & 0.7103 & 0.5350 \\
 \label{tab:estrategias_sin_gpa}
 \end{table}
 
-La Tabla~\ref{tab:estrategias_sin_gpa} resume las estrategias adicionales exploradas dentro del escenario sin \texttt{GPA}. Aunque se probaron rutas como ajuste de umbral, clasificación ordinal, \textit{HistGradientBoosting}, balanceo con SMOTE y esquemas en dos etapas, ninguna logró superar de manera consistente a \textit{Random Forest} con \textit{ingeniería\_v1}. La lección metodológica es relevante: en este problema, la mejora no provino de aumentar artificiosamente la complejidad del clasificador, sino de representar mejor la información conductual disponible. Por ello, el escenario sin \texttt{GPA} no debe leerse como una rama menor del proyecto, sino como el componente que traduce el estudio hacia una aplicación más genuinamente predictiva. Su mejor resultado es inferior al del escenario principal, pero conceptualmente es más cercano a un uso institucional real para detección temprana, precisamente porque opera antes de que exista una calificación final consolidada.
+La Tabla~\ref{tab:estrategias_sin_gpa} resume las estrategias adicionales exploradas dentro del escenario sin \texttt{GPA}. Aunque se probaron rutas como ajuste de umbral, clasificación ordinal, \textit{HistGradientBoosting}, balanceo con SMOTE y esquemas en dos etapas, ninguna logró superar de manera consistente a \textit{Random Forest} con ingeniería de variables. La lección metodológica es relevante: en este problema, la mejora no provino de aumentar artificiosamente la complejidad del clasificador, sino de representar mejor la información conductual disponible. Por ello, el escenario sin \texttt{GPA} no debe leerse como una rama secundaria del análisis, sino como el componente que orienta el estudio hacia una aplicación más genuinamente predictiva. Su mejor resultado es inferior al del escenario principal, pero conceptualmente es más cercano a un uso institucional real para detección temprana, precisamente porque opera antes de que exista una calificación final consolidada.
 
 \subsection{Separabilidad y límite del escenario temprano}
 
@@ -442,11 +547,11 @@ La Figura~\ref{fig:separabilidad_pca_3d_0vs1} concentra el caso más delicado de
 \label{fig:separabilidad_dist}
 \end{figure}
 
-La Figura~\ref{fig:separabilidad_dist} termina de cerrar esta interpretación. Las distribuciones muestran desplazamientos detectables en algunas variables, pero no una ruptura tajante entre ambas clases. Esa ausencia de separación limpia es coherente con el comportamiento de los modelos probados sin \texttt{GPA}: varias estrategias adicionales quedaron por debajo de \textit{Random Forest} con \textit{ingeniería\_v1}, no porque el problema carezca de señal, sino porque la información conductual disponible describe perfiles cercanos con solapamiento genuino. Integrado al cuerpo principal del trabajo, este análisis aporta el matiz que faltaba: el proyecto no solo clasifica bien cuando dispone de información académica consolidada, sino que también delimita hasta dónde puede llegar una aproximación de alerta temprana basada únicamente en atributos observables durante el proceso formativo.
+La Figura~\ref{fig:separabilidad_dist} termina de cerrar esta interpretación. Las distribuciones muestran desplazamientos detectables en algunas variables, pero no una ruptura tajante entre ambas clases. Esa ausencia de separación limpia es coherente con el comportamiento de los modelos probados sin \texttt{GPA}: varias estrategias adicionales quedaron por debajo de \textit{Random Forest} con \textit{ingeniería\_v1}, no porque el problema carezca de señal, sino porque la información conductual disponible describe perfiles cercanos con solapamiento genuino. Integrado al cuerpo principal del trabajo, este análisis aporta un matiz importante: el estudio no solo clasifica bien cuando dispone de información académica consolidada, sino que también delimita hasta dónde puede llegar una aproximación de alerta temprana basada únicamente en atributos observables durante el proceso formativo.
 
 \section{Summary}\label{sec:summary}
 
-Con el fin de concentrar en una sola sección la estructura técnica de los componentes principales del trabajo, se presenta a continuación un resumen tabular del modelo neuronal, del modelo comparativo y del experimento complementario sin \texttt{GPA}. Estas tablas no sustituyen la discusión previa, sino que condensan la información necesaria para una lectura rápida de arquitectura, configuración y alcance metodológico. En conjunto, permiten distinguir tres niveles de análisis: el escenario principal basado en el conjunto completo de atributos, la comparación con un método de ensamble para datos tabulares y la exploración adicional orientada a caracterización temprana mediante atributos derivados. Esta organización también facilita la defensa oral del proyecto, ya que separa con claridad qué corresponde a un modelo supervisado por capas, qué corresponde a un ensamble de árboles y qué corresponde a una estrategia de representación de datos aplicada sobre un clasificador.
+Con el fin de concentrar en una sola sección la estructura técnica de los componentes principales del trabajo, se presenta a continuación un resumen tabular del modelo neuronal, del modelo comparativo y del experimento complementario sin \texttt{GPA}. En conjunto, permiten distinguir tres niveles de análisis: el escenario principal basado en el conjunto completo de atributos, la comparación con un método de ensamble para datos tabulares y la exploración adicional orientada a caracterización temprana mediante atributos derivados. Esta organización permite distinguir con claridad qué corresponde a un modelo supervisado por capas, qué corresponde a un ensamble de árboles y qué corresponde a una estrategia de representación de datos aplicada sobre un clasificador.
 
 \begin{table}[htbp]
 \centering
@@ -459,6 +564,7 @@ Elemento & Descripción \\
 \midrule
 Modelo & MLP (red neuronal multicapa) \\
 Entrada & 30 variables \\
+Codificación categórica base & \textit{One-hot encoding} \\
 Capas ocultas & 200 \textrightarrow\ 200 \textrightarrow\ 150 \textrightarrow\ 200 \\
 Regularización & \textit{Dropout}(0.2) después de cada capa oculta \\
 Salida & 5 neuronas con \textit{softmax} \\
@@ -466,13 +572,37 @@ Parámetros totales & 104,555 \\
 Parámetros entrenables & 104,555 \\
 Parámetros no entrenables & 0 \\
 Configuración ganadora & Adam, 0.0001, lote 32, 50 épocas \\
+Verificación adicional & Embeddings: exactitud 0.8997, F1 macro 0.7950 \\
 \bottomrule
 \end{tabular}
 \normalsize
 \label{tab:summary_mlp}
 \end{table}
 
-La Tabla~\ref{tab:summary_mlp} resume la configuración definitiva del MLP principal utilizado en el escenario base del estudio. Su estructura refleja una arquitectura densa relativamente amplia para el tamaño del dataset, con cuatro capas ocultas y un total de 104,555 parámetros entrenables. Esta magnitud ayuda a explicar por qué la regularización mediante \textit{Dropout} fue necesaria para estabilizar el aprendizaje y contener el sobreajuste. La combinación final de \texttt{Adam}, tasa de aprendizaje de 0.0001, lote de 32 y 50 épocas representó el mejor equilibrio entre convergencia y desempeño en validación. En términos interpretativos, este modelo encapsula la apuesta de aprendizaje profundo del trabajo: recibir una representación numérica preprocesada de 30 entradas y transformarla progresivamente hasta producir probabilidades para cada una de las cinco clases. Aunque el MLP logró resultados sólidos, su resumen técnico también muestra que era un modelo de mayor complejidad estructural que el clasificador comparativo basado en árboles.
+La Tabla~\ref{tab:summary_mlp} resume la configuración definitiva del MLP principal utilizado en el escenario base del estudio. Su estructura refleja una arquitectura densa relativamente amplia para el tamaño del dataset, con cuatro capas ocultas y un total de 104,555 parámetros entrenables. Esta magnitud ayuda a explicar por qué la regularización mediante \textit{Dropout} fue necesaria para estabilizar el aprendizaje y contener el sobreajuste. La combinación final de \texttt{Adam}, tasa de aprendizaje de 0.0001, lote de 32 y 50 épocas representó el mejor equilibrio entre convergencia y desempeño en validación. Además, el summary deja constancia de que la representación categórica base fue \textit{one-hot encoding} y que, en una verificación adicional, una variante con embeddings produjo una mejora del propio MLP sin alterar el resto del escenario principal. Aunque el MLP logró resultados sólidos, su resumen técnico también muestra que era un modelo de mayor complejidad estructural que el clasificador comparativo basado en árboles.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary de la verificación adicional con embeddings}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{3.0cm}p{4.2cm}}
+\toprule
+Elemento & Descripción \\
+\midrule
+Escenario & Principal, con \texttt{GPA} \\
+Modelo base contrastado & MLP con \textit{one-hot encoding} \\
+Variante evaluada & MLP con embeddings para 9 variables categóricas \\
+Configuración ganadora & SGD, 0.001, lote 32, 150 épocas \\
+Resultados & Exactitud 0.8997, F1 macro 0.7950 \\
+Lectura metodológica & Verificación adicional sobre representación categórica \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:summary_embeddings}
+\end{table}
+
+La Tabla~\ref{tab:summary_embeddings} sintetiza la verificación adicional motivada por la representación de variables categóricas en el MLP. Su lugar dentro del documento es deliberadamente complementario: no redefine la comparación principal entre MLP y \textit{Random Forest}, pero tampoco queda como un comentario marginal. El resultado muestra que, bajo el mismo escenario principal, una representación con embeddings mejoró al MLP basado en \textit{one-hot encoding}. Por ello, este summary funciona como cierre breve de una comprobación metodológica específica, con suficiente entidad para ser documentada, pero sin desplazar el eje central del estudio.
 
 \begin{table}[htbp]
 \centering

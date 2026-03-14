@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + binary_encoding,0.8384,0.7802,0.7073,0.7276,"{'batch_size': 32, 'epochs': 150, 'learning_rate': 0.001, 'optimizer': 'sgd'}"

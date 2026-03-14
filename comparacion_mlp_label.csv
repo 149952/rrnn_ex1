@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + label_encoding,0.8412,0.7599,0.7003,0.7109,"{'batch_size': 32, 'epochs': 50, 'learning_rate': 0.0005, 'optimizer': 'adam'}"

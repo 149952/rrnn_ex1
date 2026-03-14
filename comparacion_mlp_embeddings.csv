@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + embeddings,0.8997,0.8636,0.7754,0.795,"{'batch_size': 32, 'epochs': 150, 'learning_rate': 0.001, 'optimizer': 'sgd'}"

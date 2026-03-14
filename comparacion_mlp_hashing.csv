@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + feature_hashing,0.8134,0.7168,0.6878,0.6987,"{'batch_size': 32, 'epochs': 50, 'learning_rate': 0.0005, 'optimizer': 'adam'}"

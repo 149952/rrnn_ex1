@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + leave_one_out_encoding,0.8162,0.8009,0.6687,0.677,"{'batch_size': 32, 'epochs': 100, 'learning_rate': 0.001, 'optimizer': 'sgd'}"

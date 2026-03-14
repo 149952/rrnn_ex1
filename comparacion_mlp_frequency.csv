@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + frequency_encoding,0.8357,0.7645,0.7094,0.7268,"{'batch_size': 128, 'epochs': 50, 'learning_rate': 0.001, 'optimizer': 'rmsprop'}"

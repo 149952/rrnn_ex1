@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + embeddings sin GPA,0.7437,0.6366,0.5887,0.5963,"{'batch_size': 32, 'epochs': 50, 'learning_rate': 0.0005, 'optimizer': 'adam'}"
