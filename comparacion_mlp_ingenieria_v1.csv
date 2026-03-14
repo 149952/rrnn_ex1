@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP + ingenieria_v1,0.7409,0.6329,0.5784,0.5899,"{'batch_size': 64, 'epochs': 150, 'learning_rate': 0.0001, 'optimizer': 'adam'}"

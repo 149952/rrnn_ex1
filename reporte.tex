@@ -27,6 +27,8 @@
 Este trabajo aborda un problema de clasificación supervisada para predecir el desempeño académico de estudiantes de preparatoria. Consideramos variables como datos demográficos, hábitos de estudio, apoyo parental, actividades extracurriculares y promedio general. Como modelo principal, implementamos una red neuronal multicapa (MLP) con la arquitectura especificada en el enunciado. Además, usamos un clasificador \textit{Random Forest} como modelo comparativo, basado en literatura previa sobre predicción de desempeño académico y deserción escolar.
 
 El proceso incluyó preprocesamiento de datos, partición estratificada, búsqueda de hiperparámetros y evaluación con métricas de clasificación. También analizamos los resultados usando matrices de confusión normalizadas e importancia de variables. Los resultados indican que ambos modelos lograron un desempeño competitivo, aunque \textit{Random Forest} obtuvo el mejor resultado final en el conjunto de prueba.
+
+De manera complementaria, se estudió un escenario de caracterización inicial sin \texttt{GPA}, orientado a una lectura más predictiva y de alerta temprana. En ese contexto, la ingeniería de variables permitió recuperar señal útil a partir de hábitos, apoyo parental y participación escolar, aunque con límites claros de separabilidad entre clases adyacentes.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -40,8 +42,8 @@ clasificación, MLP, Random Forest, desempeño académico, deserción escolar
 \hyperref[sec:fundamento]{Fundamento},
 \hyperref[sec:metodologia]{Metodología},
 \hyperref[sec:resultados]{Resultados},
+\hyperref[sec:summary]{Summary},
 \hyperref[sec:conclusiones]{Conclusiones},
-\hyperref[sec:apendice_temprana]{Apéndice A},
 \hyperref[sec:referencias]{Referencias}.
 \vspace{0.4em}
 
@@ -51,7 +53,29 @@ Predecir el desempeño académico temprano es crucial en educación para identif
 
 Este estudio usó el \textit{Student Performance Dataset} con registros de 2392 estudiantes de preparatoria, incluyendo datos demográficos, hábitos de estudio, participación parental, actividades extracurriculares y desempeño académico. El problema se planteó como clasificación multiclase, con \texttt{GradeClass} como variable objetivo, una categorización ordinal del promedio general (\texttt{GPA}) en cinco niveles de desempeño.
 
-El objetivo fue desarrollar un modelo de red neuronal multicapa y compararlo con otro de la literatura. El documento se organiza así: Sección II, antecedentes; Sección III, fundamento teórico; Sección IV, proceso experimental; Sección V, resultados; Sección VI, conclusiones; y Apéndice A, caracterización inicial del estudiante sin información académica previa.
+\begin{table}[htbp]
+\centering
+\caption{Codificación de \texttt{GradeClass}}
+\scriptsize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{cl}
+\toprule
+Clase & Nivel de desempeño \\
+\midrule
+0 & Más alto \\
+1 & Alto \\
+2 & Medio \\
+3 & Bajo \\
+4 & Más bajo \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:gradeclass_mapping}
+\end{table}
+
+La Tabla~\ref{tab:gradeclass_mapping} fija explícitamente la correspondencia de etiquetas utilizada a lo largo del documento. En consecuencia, una clase numérica menor representa un mejor desempeño académico, mientras que una clase numérica mayor representa un desempeño más bajo.
+
+El objetivo fue desarrollar un modelo de red neuronal multicapa y compararlo con otro de la literatura. Además, se incorporó un segundo escenario de análisis sin \texttt{GPA}, enfocado en caracterización temprana del estudiante mediante atributos conductuales y contextuales. El documento se organiza así: Sección II, antecedentes; Sección III, fundamento teórico; Sección IV, proceso experimental; Sección V, resultados; Sección VI, \textit{Summary}; Sección VII, conclusiones; y finalmente las referencias.
 
 \section{Trabajo relacionado}\label{sec:relacionado}
 
@@ -149,6 +173,12 @@ La configuración ganadora, que logró el mejor equilibrio entre desempeño y es
 \subsection{Modelo comparativo y búsqueda de hiperparámetros}
 
 Para \textit{Random Forest} se evaluaron 108 combinaciones de hiperparámetros, variando número de árboles (200, 400 y 700), profundidad máxima (10, 20, 30 o sin límite), peso por clase (\texttt{None}, \texttt{balanced} y \texttt{balanced\_subsample}) y tamaño mínimo de hoja (1, 2 y 4). El criterio de selección fue el puntaje F1 macro sobre el subconjunto de validación.
+
+\subsection{Escenario complementario de alerta temprana}
+
+Además del escenario principal con el conjunto completo de atributos, se construyó un escenario complementario orientado a caracterización temprana del estudiante. En esta variante se excluyó \texttt{GPA}, dado que forma parte del resultado académico ya observado y no de la información disponible al inicio del seguimiento. El propósito fue aproximar una lectura más predictiva del problema, centrada en variables demográficas, hábitos de estudio, acompañamiento familiar y participación escolar.
+
+Sobre ese conjunto base se aplicó ingeniería de variables para construir atributos derivados con significado conductual. Entre los más relevantes se incluyeron \texttt{StudyTimePerAbsence}, \texttt{AcademicEngagementScore}, \texttt{SupportActivityInteraction}, \texttt{SupportTutoringInteraction} y \texttt{ActivityCount}. Estas transformaciones buscaron representar de forma más informativa la relación entre dedicación, ausentismo, tutorías y apoyo parental. El escenario sin \texttt{GPA} se evaluó principalmente con \textit{Random Forest}, ya que en las pruebas comparativas resultó más estable que las variantes MLP bajo este conjunto de atributos.
 
 \subsection{Recursos de cómputo y software}
 
@@ -261,12 +291,12 @@ La Tabla~\ref{tab:comparacion} presenta la comparación cuantitativa principal. 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\linewidth]{matrices_confusion_comparadas.png}
-\caption{Matrices de confusión normalizadas del MLP principal y de Random Forest.}
+\includegraphics[width=0.95\linewidth]{cm_comparada_normalizada_columnas.png}
+\caption{Matrices de confusión normalizadas por columna para el MLP principal y Random Forest.}
 \label{fig:confusiones}
 \end{figure}
 
-La Figura~\ref{fig:confusiones} revela la estructura de errores de cada modelo. En ambos casos, la clase~4 obtiene el mejor reconocimiento, asociado tanto a su mayor frecuencia como a la señal explicativa de \texttt{GPA}. La clase~0 es la más difícil en ambos modelos, aunque \textit{Random Forest} logra una tasa de identificación superior. Los errores se concentran principalmente entre clases adyacentes, lo que es coherente con la naturaleza ordinal del problema.
+La Figura~\ref{fig:confusiones} muestra matrices de confusión normalizadas por columna, por lo que cada celda indica de qué clase real provienen las muestras que el modelo asignó a una clase predicha determinada. Esta lectura enfatiza la precisión por clase y permite observar con mayor claridad la pureza de cada salida del clasificador. En ambos modelos, la clase~4 concentra las predicciones más consistentes, mientras que la clase~0 sigue siendo la más difícil de sostener con alta pureza. La comparación también confirma que \textit{Random Forest} produce columnas más concentradas en la diagonal principal que el MLP, lo cual es coherente con su ventaja en las métricas globales.
 
 \begin{figure}[htbp]
 \centering
@@ -308,42 +338,7 @@ educación parental & 0.0281 \\
 \label{tab:importancia}
 \end{table}
 
-\section{Conclusiones}\label{sec:conclusiones}
-
-El estudio reveló que el rendimiento académico estudiantil se puede modelar con precisión a partir del conjunto completo de atributos disponibles en el \textit{Student Performance Dataset}. En el escenario principal, el modelo de red neuronal multicapa (MLP) logró una exactitud de 0.8607 y un puntaje F1 macro de 0.7643. Sin embargo, \textit{Random Forest} superó al MLP, obteniendo el mejor desempeño general con una exactitud de 0.9331 y un puntaje F1 macro de 0.8604.
-
-Para construir un modelo sólido y comunicar resultados significativos, es crítico un preprocesamiento adecuado, la partición estratificada, la búsqueda sistemática de hiperparámetros y la interpretación de la importancia de las variables. En conjuntos de datos tabulares compactos con variables altamente informativas, \textit{Random Forest} puede ser más adecuado que una arquitectura densa, como lo demuestra la comparación entre un enfoque profundo y un método clásico.
-
-El análisis del apéndice mostró que, sin información académica previa consolidada, se puede extraer información predictiva valiosa de las variables de comportamiento y acompañamiento. Sin embargo, hay un límite importante para separar los perfiles de desempeño más bajos de sus clases adyacentes. Esto indica que una caracterización temprana más precisa necesita atributos adicionales, como el historial académico por periodo o indicadores contextuales más detallados.
-
-Los resultados ofrecen dos perspectivas: una se centra en clasificar con precisión el desempeño observado, y la otra en identificar el riesgo académico temprano, lo cual es valioso para la institución. La eficacia de estos enfoques está limitada por la información disponible en el conjunto de datos.
-
-\appendices
-\phantomsection
-\section{Caracterización inicial del estudiante sin información académica previa}\label{sec:apendice_temprana}
-
-Antes de contar con información académica consolidada, ¿qué se puede saber del perfil de un estudiante? Esta pregunta motiva este apéndice, ya que desde la perspectiva institucional, un sistema de alerta temprana no siempre tiene acceso al promedio final del periodo ni a una etiqueta de desempeño ya lista. Sin embargo, sí puede acceder a variables contextuales y hábitos como ausencias, tiempo de estudio, tutorías, apoyo parental y participación en actividades.
-
-\subsection{Motivación}
-
-En el núcleo principal del trabajo, el \texttt{GPA} fue una variable válida porque el enunciado no la prohibía y el objetivo era comparar modelos sobre el conjunto completo de atributos. Sin embargo, para la caracterización inicial del estudiante, el \texttt{GPA} deja de ser una señal adecuada, ya que forma parte del resultado ya observado y no de la información disponible al inicio del seguimiento. Por lo tanto, se abrió una línea exploratoria separada en la que se excluyó el \texttt{GPA} y se reformuló la tarea como una aproximación a la identificación temprana de perfiles de riesgo académico.
-
-\subsection{Ingeniería de variables}
-
-En este escenario, partimos de un conjunto base de variables demográficas, de hábitos y de apoyo, sin incluir el \texttt{GPA}. Posteriormente, enriquecimos este conjunto mediante ingeniería de variables. El objetivo no era simplemente aumentar el número de atributos, sino identificar señales de conducta y acompañamiento que podrían estar disponibles durante el periodo escolar, antes de contar con un resultado académico consolidado.
-
-Entre las variables derivadas más relevantes se encuentran:
-
-\begin{itemize}
-  \item \texttt{StudyTimePerAbsence}: aproxima la relación entre el tiempo de estudio y el ausentismo.
-  \item \texttt{AcademicEngagementScore}: resume una idea de compromiso académico a partir de factores como el estudio, las tutorías, el apoyo y las ausencias.
-  \item \texttt{SupportActivityInteraction}: combina el apoyo parental con la participación extracurricular.
-  \item \texttt{SupportTutoringInteraction}: refleja la posible acción conjunta entre el acompañamiento familiar y la tutoría.
-\end{itemize}
-
-Estas variables se concibieron como \textit{proxies} conductuales, es decir, indicadores indirectos de cómo un estudiante se vincula con su proceso formativo antes de contar con una calificación final consolidada.
-
-\subsection{Resultados de caracterización sin información académica previa}
+\subsection{Escenario de caracterización temprana sin GPA}
 
 \begin{table}[htbp]
 \centering
@@ -361,47 +356,19 @@ Ingeniería de variables & 0.7604 & 0.6495 & 0.5946 & 0.6039 \\
 \end{tabular}%
 }
 \normalsize
-\label{tab:apendice_comparacion_sin_gpa}
+\label{tab:comparacion_sin_gpa}
 \end{table}
 
-La Tabla~\ref{tab:apendice_comparacion_sin_gpa} ilustra el impacto de la ingeniería de variables en el mejor modelo desarrollado sin el \texttt{GPA}. El conjunto base logró una exactitud de 0.7131 y un puntaje F1 macro de 0.5624. Sin embargo, al incorporar ingeniería de variables, el rendimiento mejoró significativamente, alcanzando una exactitud de 0.7604 y un puntaje F1 macro de 0.6039. Esta mejora sustancial demuestra la capacidad de recuperar información valiosa a partir de relaciones conductuales y contextuales, incluso cuando el modelo carece de la variable más directamente relacionada con el resultado académico final.
-
-Lo anterior conlleva implicaciones significativas. Al prescindir de la información académica consolidada, la resolución del problema presenta una mayor complejidad respecto al núcleo del estudio; sin embargo, no deriva en una tarea trivial.
-
-\subsection{Límite de separabilidad de la clase 0}
-
-El reto principal de esta caracterización temprana consistió en la identificación de la clase~0, correspondiente al estrato de menor desempeño. Con el fin de discernir si las dificultades de clasificación emanaban de la arquitectura del modelo o de la naturaleza intrínseca del conjunto de datos, se procedió a un análisis de separabilidad frente a las categorías adyacentes.
-
-\begin{table}[htbp]
-\centering
-\caption{Variables con mayor separación entre clase 0 y clase 1}
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lc}
-\toprule
-Variable & KS 0 vs 1 \\
-\midrule
-\texttt{StudyTimePerAbsence} & 0.224 \\
-\texttt{ParentalSupport} & 0.208 \\
-\texttt{SupportTutoringInteraction} & 0.169 \\
-\texttt{Absences} & 0.151 \\
-\texttt{SupportActivityInteraction} & 0.143 \\
-\bottomrule
-\end{tabular}
-\normalsize
-\label{tab:apendice_ks}
-\end{table}
-
-La Tabla~\ref{tab:apendice_ks} detalla las variables que presentan una mayor discriminación entre las clases~0 y~1 bajo el estadístico KS. Si bien los valores confirman la presencia de señales predictivas valiosas, especialmente en métricas de apoyo parental, tutorías y la relación estudio-ausencias, las magnitudes de separación son moderadas, impidiendo una delimitación absoluta entre ambos grupos.
+La Tabla~\ref{tab:comparacion_sin_gpa} introduce el segundo eje del trabajo: la caracterización temprana del estudiante sin información académica previa consolidada. Bajo este escenario, el problema se vuelve más exigente porque el modelo deja de contar con la variable más directamente asociada con la etiqueta final. Aun así, el rendimiento no colapsa. El conjunto base sin \texttt{GPA} alcanzó una exactitud de 0.7131 y un puntaje F1 macro de 0.5624, mientras que la incorporación de ingeniería de variables elevó esos valores a 0.7604 y 0.6039, respectivamente. Este resultado aporta una lectura distinta a la del escenario principal: más que clasificar con información ya cercana al desenlace, muestra cuánta señal puede recuperarse de patrones de asistencia, estudio, tutoría, apoyo parental y actividades. En términos institucionales, este bloque es el que más se aproxima a un sistema de alerta temprana, porque trabaja con atributos potencialmente observables antes del cierre del periodo escolar.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\linewidth]{separabilidad_pca.png}
-\caption{Proyección PCA para analizar la separabilidad de la clase 0.}
-\label{fig:apendice_pca}
+\includegraphics[width=0.95\linewidth]{cm_comparada_ingenieria_normalizada_columnas.png}
+\caption{Matrices de confusión normalizadas por columna para el escenario sin GPA: conjunto base frente a ingeniería de variables.}
+\label{fig:confusiones_ingenieria}
 \end{figure}
 
-Esta condición se hace evidente en la Figura~\ref{fig:apendice_pca}, donde la proyección espacial muestra que la clase~0, aunque tiende a agruparse en regiones específicas, mantiene un traslape sustancial con la clase~1.
+La Figura~\ref{fig:confusiones_ingenieria} complementa la Tabla~\ref{tab:comparacion_sin_gpa} al mostrar cómo cambia la pureza de las predicciones cuando se pasa del conjunto base a la representación con ingeniería de variables. Al estar normalizada por columna, la visual permite identificar con mayor precisión si las clases predichas se sostienen sobre muestras reales de la misma categoría o si están recibiendo mezcla de clases vecinas. La mejora introducida por \textit{ingeniería\_v1} no solo se expresa en exactitud y F1 macro: también se observa en una concentración más clara de varias columnas sobre su diagonal, lo que indica salidas más consistentes para un problema que ya no cuenta con la señal dominante de \texttt{GPA}.
 
 \begin{table}[htbp]
 \centering
@@ -421,21 +388,151 @@ Clasificación en dos etapas & 0.7103 & 0.5350 \\
 \bottomrule
 \end{tabular}
 \normalsize
-\label{tab:apendice_estrategias}
+\label{tab:estrategias_sin_gpa}
 \end{table}
 
-Exploraciones adicionales consignadas en la Tabla~\ref{tab:apendice_estrategias} corroboran que ninguna variante metodológica logró superar el rendimiento del modelo \textit{Random Forest} potenciado con ingeniería de variables. Lo anterior sugiere que la restricción no reside en la selección del algoritmo, sino en la convergencia real de los perfiles de bajo desempeño.
+La Tabla~\ref{tab:estrategias_sin_gpa} resume las estrategias adicionales exploradas dentro del escenario sin \texttt{GPA}. Aunque se probaron rutas como ajuste de umbral, clasificación ordinal, \textit{HistGradientBoosting}, balanceo con SMOTE y esquemas en dos etapas, ninguna logró superar de manera consistente a \textit{Random Forest} con \textit{ingeniería\_v1}. La lección metodológica es relevante: en este problema, la mejora no provino de aumentar artificiosamente la complejidad del clasificador, sino de representar mejor la información conductual disponible. Por ello, el escenario sin \texttt{GPA} no debe leerse como una rama menor del proyecto, sino como el componente que traduce el estudio hacia una aplicación más genuinamente predictiva. Su mejor resultado es inferior al del escenario principal, pero conceptualmente es más cercano a un uso institucional real para detección temprana, precisamente porque opera antes de que exista una calificación final consolidada.
+
+\subsection{Separabilidad y límite del escenario temprano}
+
+\begin{table}[htbp]
+\centering
+\caption{Variables con mayor separación entre las clases 0 y 1}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lc}
+\toprule
+Variable & KS 0 vs 1 \\
+\midrule
+\texttt{StudyTimePerAbsence} & 0.224 \\
+\texttt{ParentalSupport} & 0.208 \\
+\texttt{SupportTutoringInteraction} & 0.169 \\
+\texttt{Absences} & 0.151 \\
+\texttt{SupportActivityInteraction} & 0.143 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:ks_sin_gpa}
+\end{table}
+
+La Tabla~\ref{tab:ks_sin_gpa} muestra que, incluso sin \texttt{GPA}, sí existen variables con capacidad discriminativa entre clases adyacentes. Las señales más útiles se concentraron en la relación entre tiempo de estudio y ausencias, el apoyo parental y la interacción entre tutorías y acompañamiento familiar. Sin embargo, los valores KS siguen siendo moderados, lo que indica que estas diferencias no alcanzan para producir fronteras nítidas entre grupos cercanos. Este hallazgo es importante porque cambia la lectura del problema: el techo del escenario temprano no depende solo del algoritmo, sino también de la separabilidad real que ofrecen las variables disponibles. En otras palabras, el experimento confirma que sí hay información útil para anticipar tendencias de desempeño, pero esa información es incompleta y se vuelve especialmente ambigua cuando se intenta distinguir categorías ordinales contiguas.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{separabilidad_pca_3d_todas.png}
+\caption{Proyección PCA 3D para visualizar la distribución global de clases sin GPA.}
+\label{fig:separabilidad_pca_3d_todas}
+\end{figure}
+
+La Figura~\ref{fig:separabilidad_pca_3d_todas} amplía la lectura de separabilidad al incorporar una tercera componente principal. Esta vista permite observar mejor la distribución espacial del conjunto completo de clases y reduce parte del empalme que aparece en una proyección bidimensional. Aun con esta perspectiva más rica, el patrón general confirma que existen regiones diferenciadas, pero no fronteras completamente limpias entre clases cercanas. A nivel global, la evaluación binaria arrojó un AUC de 0.7345 para el escenario clase~0 frente a clase~1 y un AUC de 0.8211 para clase~0 frente al resto del conjunto. Esta diferencia indica que la clase~0 puede distinguirse razonablemente cuando el contraste es amplio, pero su frontera crítica aparece precisamente frente a la categoría adyacente.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{separabilidad_pca_3d_0vs1.png}
+\caption{Proyección PCA 3D enfocada en la separabilidad entre las clases 0 y 1.}
+\label{fig:separabilidad_pca_3d_0vs1}
+\end{figure}
+
+La Figura~\ref{fig:separabilidad_pca_3d_0vs1} concentra el caso más delicado del escenario temprano: la separación entre dos clases ordinalmente adyacentes. La visual 3D confirma que la tercera componente ayuda a apreciar mejor la nube de puntos, pero no elimina el traslape entre ambos grupos. Dicho de otra forma, el escenario temprano tiene señal suficiente para identificar perfiles extremos en términos generales, pero no para separar con la misma nitidez clases vecinas dentro de la escala ordinal.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{separabilidad_distribuciones.png}
-\caption{Distribuciones de variables clave para clase 0 y clase 1.}
-\label{fig:apendice_dist}
+\caption{Distribuciones de variables clave para las clases 0 y 1.}
+\label{fig:separabilidad_dist}
 \end{figure}
 
-El análisis de las distribuciones en la Figura~\ref{fig:apendice_dist} refuerza esta interpretación: existen matices observables, pero no una ruptura clara. Esta ambigüedad se cuantifica en la evaluación binaria: mientras que el escenario clase~0 frente a clase~1 alcanza un AUC de 0.7345, la comparación de la clase~0 contra el resto del conjunto se eleva a un AUC de 0.8211.
+La Figura~\ref{fig:separabilidad_dist} termina de cerrar esta interpretación. Las distribuciones muestran desplazamientos detectables en algunas variables, pero no una ruptura tajante entre ambas clases. Esa ausencia de separación limpia es coherente con el comportamiento de los modelos probados sin \texttt{GPA}: varias estrategias adicionales quedaron por debajo de \textit{Random Forest} con \textit{ingeniería\_v1}, no porque el problema carezca de señal, sino porque la información conductual disponible describe perfiles cercanos con solapamiento genuino. Integrado al cuerpo principal del trabajo, este análisis aporta el matiz que faltaba: el proyecto no solo clasifica bien cuando dispone de información académica consolidada, sino que también delimita hasta dónde puede llegar una aproximación de alerta temprana basada únicamente en atributos observables durante el proceso formativo.
 
-Dicha discrepancia confirma que la clase~0 es distinguible a nivel global, pero su frontera crítica se sitúa en la vecindad inmediata de la clase~1. En conclusión, el techo de rendimiento del clasificador está condicionado por el límite de separabilidad del dataset y la similitud conductual entre perfiles de riesgo. Este análisis no solo documenta un escenario alternativo, sino que valida la capacidad de los atributos conductuales para rescatar señales relevantes incluso ante la ausencia de antecedentes académicos formales.
+\section{Summary}\label{sec:summary}
+
+Con el fin de concentrar en una sola sección la estructura técnica de los componentes principales del trabajo, se presenta a continuación un resumen tabular del modelo neuronal, del modelo comparativo y del experimento complementario sin \texttt{GPA}. Estas tablas no sustituyen la discusión previa, sino que condensan la información necesaria para una lectura rápida de arquitectura, configuración y alcance metodológico. En conjunto, permiten distinguir tres niveles de análisis: el escenario principal basado en el conjunto completo de atributos, la comparación con un método de ensamble para datos tabulares y la exploración adicional orientada a caracterización temprana mediante atributos derivados. Esta organización también facilita la defensa oral del proyecto, ya que separa con claridad qué corresponde a un modelo supervisado por capas, qué corresponde a un ensamble de árboles y qué corresponde a una estrategia de representación de datos aplicada sobre un clasificador.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary del MLP principal}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{3.0cm}p{4.2cm}}
+\toprule
+Elemento & Descripción \\
+\midrule
+Modelo & MLP (red neuronal multicapa) \\
+Entrada & 30 variables \\
+Capas ocultas & 200 \textrightarrow\ 200 \textrightarrow\ 150 \textrightarrow\ 200 \\
+Regularización & \textit{Dropout}(0.2) después de cada capa oculta \\
+Salida & 5 neuronas con \textit{softmax} \\
+Parámetros totales & 104,555 \\
+Parámetros entrenables & 104,555 \\
+Parámetros no entrenables & 0 \\
+Configuración ganadora & Adam, 0.0001, lote 32, 50 épocas \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:summary_mlp}
+\end{table}
+
+La Tabla~\ref{tab:summary_mlp} resume la configuración definitiva del MLP principal utilizado en el escenario base del estudio. Su estructura refleja una arquitectura densa relativamente amplia para el tamaño del dataset, con cuatro capas ocultas y un total de 104,555 parámetros entrenables. Esta magnitud ayuda a explicar por qué la regularización mediante \textit{Dropout} fue necesaria para estabilizar el aprendizaje y contener el sobreajuste. La combinación final de \texttt{Adam}, tasa de aprendizaje de 0.0001, lote de 32 y 50 épocas representó el mejor equilibrio entre convergencia y desempeño en validación. En términos interpretativos, este modelo encapsula la apuesta de aprendizaje profundo del trabajo: recibir una representación numérica preprocesada de 30 entradas y transformarla progresivamente hasta producir probabilidades para cada una de las cinco clases. Aunque el MLP logró resultados sólidos, su resumen técnico también muestra que era un modelo de mayor complejidad estructural que el clasificador comparativo basado en árboles.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary del modelo comparativo Random Forest}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{3.0cm}p{4.2cm}}
+\toprule
+Elemento & Descripción \\
+\midrule
+Modelo & Random Forest \\
+Estructura & Ensamble de árboles de decisión \\
+Capas & No aplica \\
+Parámetros totales & No aplica como red neuronal \\
+Parámetros entrenables & No aplica \\
+Parámetros no entrenables & No aplica \\
+Configuración ganadora & 200 árboles, profundidad sin límite, hoja mínima 2, \texttt{class\_weight=balanced} \\
+Criterio de selección & Puntaje F1 macro en validación \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:summary_rf}
+\end{table}
+
+La Tabla~\ref{tab:summary_rf} sintetiza el modelo comparativo elegido para contrastar el desempeño del MLP. A diferencia de la red neuronal, \textit{Random Forest} no se describe mediante capas ni mediante un conteo de parámetros entrenables, ya que su complejidad depende de la cantidad y configuración de árboles del ensamble. Por ello, el resumen se centra en los hiperparámetros que sí determinan su capacidad de representación: número de árboles, profundidad máxima, tamaño mínimo de hoja y ponderación de clases. La mejor configuración favoreció un ensamble robusto y flexible, capaz de adaptarse a relaciones no lineales sin requerir la estructura más pesada de una red profunda. Este summary es importante porque aclara que la comparación entre modelos no fue una comparación entre dos arquitecturas del mismo tipo, sino entre dos paradigmas distintos de aprendizaje supervisado. En este problema particular, esa diferencia metodológica se tradujo en una ventaja consistente para \textit{Random Forest} en exactitud y F1 macro.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary del experimento de ingeniería de variables}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{3.0cm}p{4.2cm}}
+\toprule
+Elemento & Descripción \\
+\midrule
+Escenario & Sin información académica previa consolidada \\
+Modelo & Random Forest con ingeniería de variables \\
+Capas & No aplica \\
+Atributos base & 12 \\
+Atributos derivados & 5 \\
+Total de atributos & 17 \\
+Configuración ganadora & 200 árboles, profundidad 10, hoja mínima 4, \texttt{class\_weight=None} \\
+Resultados & Exactitud 0.7604, precisión macro 0.6495, sensibilidad macro 0.5946, F1 macro 0.6039 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\label{tab:summary_ingenieria}
+\end{table}
+
+La Tabla~\ref{tab:summary_ingenieria} resume el experimento complementario orientado a caracterización inicial del estudiante. En este caso, el interés no fue maximizar el desempeño con todas las variables disponibles, sino evaluar cuánta señal predictiva podía recuperarse al excluir \texttt{GPA} y enriquecer la representación mediante atributos derivados. El paso de 12 atributos base a 17 atributos totales refleja una estrategia de ingeniería de variables centrada en hábitos, apoyo y participación. Más que aumentar columnas por inercia, se buscó construir indicadores con significado conductual, como la relación entre estudio y ausencias o la interacción entre apoyo familiar y actividades. El resultado final muestra que, incluso sin la variable académica más directamente asociada con la etiqueta, el modelo conservó un nivel de desempeño útil. Este summary refuerza la idea de que la ingeniería de variables funcionó como una vía de recuperación de señal y no solo como una expansión arbitraria del espacio de entrada.
+
+\section{Conclusiones}\label{sec:conclusiones}
+
+El estudio quedó articulado en dos escenarios complementarios. El primero modeló el desempeño académico observado a partir del conjunto completo de atributos del \textit{Student Performance Dataset}. En ese marco, el modelo de red neuronal multicapa (MLP) logró una exactitud de 0.8607 y un puntaje F1 macro de 0.7643, mientras que \textit{Random Forest} obtuvo el mejor desempeño general con una exactitud de 0.9331 y un puntaje F1 macro de 0.8604. El segundo escenario se orientó a caracterización temprana sin \texttt{GPA}, más cercano a una lógica de alerta institucional, y mostró que aún es posible recuperar señal útil mediante atributos conductuales y contextuales.
+
+Para construir un modelo sólido y comunicar resultados significativos, es crítico un preprocesamiento adecuado, la partición estratificada, la búsqueda sistemática de hiperparámetros y la interpretación de la importancia de las variables. En conjuntos de datos tabulares compactos con variables altamente informativas, \textit{Random Forest} puede ser más adecuado que una arquitectura densa, como lo demuestra la comparación entre un enfoque profundo y un método clásico.
+
+El escenario de caracterización temprana mostró que, sin información académica previa consolidada, se puede extraer información predictiva valiosa de las variables de comportamiento y acompañamiento. Sin embargo, hay un límite importante para separar perfiles de clases adyacentes cuando la información disponible es únicamente contextual y conductual. Esto indica que una caracterización temprana más precisa necesita atributos adicionales, como el historial académico por periodo o indicadores contextuales más detallados.
+
+En conjunto, los resultados ofrecen dos perspectivas integradas de un mismo problema: una se centra en clasificar con precisión el desempeño ya observado y la otra en aproximar la identificación temprana de trayectorias académicas de atención prioritaria. La eficacia de ambos enfoques está determinada por la información disponible en el conjunto de datos y por el grado de separabilidad real entre las clases que se desea distinguir.
 
 \phantomsection\label{sec:referencias}
 \begin{thebibliography}{00}

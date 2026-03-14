@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP intermedio + ingenieria_v1,0.7159,0.5898,0.5561,0.5575,"{'batch_size': 32, 'epochs': 50, 'learning_rate': 0.001, 'optimizer': 'rmsprop'}"

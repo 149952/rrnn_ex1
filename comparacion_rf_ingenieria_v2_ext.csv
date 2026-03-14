@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+RF + ingenieria_v2_ext,0.7242,0.5671,0.5604,0.5584,"{'class_weight': None, 'max_depth': None, 'min_samples_leaf': 1, 'n_estimators': 200}"

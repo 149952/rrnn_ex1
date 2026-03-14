@@ -1,0 +1,2 @@
+model,accuracy,precision_macro,recall_macro,f1_macro,best_config
+MLP 5 capas + ingenieria_v4,0.7242,0.5757,0.5448,0.5413,"{'batch_size': 32, 'dropout': 0.4, 'epochs': 50, 'learning_rate': 0.001, 'optimizer': 'adam'}"

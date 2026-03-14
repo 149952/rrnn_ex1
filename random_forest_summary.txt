@@ -1,0 +1,25 @@
+Resumen del modelo comparativo: Random Forest
+
+Modelo:
+Random Forest
+
+Capas:
+No aplica. Random Forest no está compuesto por capas neuronales; es un ensamble de árboles de decisión.
+
+Parámetros totales:
+No aplica como conteo de parámetros entrenables de red neuronal.
+
+Parámetros entrenables (trainable):
+No aplica.
+
+Parámetros no entrenables (non-trainable):
+No aplica.
+
+Configuración ganadora:
+- n_estimators: 200
+- max_depth: None
+- min_samples_leaf: 2
+- class_weight: balanced
+
+Descripción:
+Random Forest construye múltiples árboles de decisión sobre subconjuntos aleatorios de datos y atributos, y combina sus predicciones por votación. Por esta razón, su complejidad se describe mejor mediante hiperparámetros del ensamble que mediante capas o parámetros entrenables como en una red neuronal.

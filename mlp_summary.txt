@@ -1,0 +1,34 @@
+Resumen del modelo principal: MLP
+
+Modelo:
+MLP (red neuronal multicapa)
+
+Capas:
+- Capa de entrada: 30 variables
+- Capa oculta 1: Dense(200, activation='relu')
+- Dropout(0.2)
+- Capa oculta 2: Dense(200, activation='relu')
+- Dropout(0.2)
+- Capa oculta 3: Dense(150, activation='relu')
+- Dropout(0.2)
+- Capa oculta 4: Dense(200, activation='relu')
+- Dropout(0.2)
+- Capa de salida: Dense(5, activation='softmax')
+
+Parámetros totales:
+104,555
+
+Parámetros entrenables (trainable):
+104,555
+
+Parámetros no entrenables (non-trainable):
+0
+
+Configuración ganadora:
+- optimizer: Adam
+- learning_rate: 0.0001
+- batch_size: 32
+- epochs: 50
+
+Descripción:
+El MLP recibe 30 entradas numéricas después del preprocesamiento, atraviesa cuatro capas ocultas con activación ReLU y regularización mediante Dropout, y produce una probabilidad para cada una de las 5 clases usando Softmax.

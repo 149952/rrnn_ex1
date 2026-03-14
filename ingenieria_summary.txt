@@ -1,0 +1,57 @@
+Resumen del experimento complementario: Ingeniería de variables
+
+Modelo:
+Random Forest con ingeniería de variables (escenario sin información académica previa consolidada)
+
+Capas:
+No aplica. Este experimento no usa una arquitectura por capas, sino un modelo de ensamble basado en árboles de decisión.
+
+Atributos base:
+- Age
+- Gender
+- Ethnicity
+- ParentalEducation
+- StudyTimeWeekly
+- Absences
+- Tutoring
+- ParentalSupport
+- Extracurricular
+- Sports
+- Music
+- Volunteering
+
+Atributos derivados creados:
+- StudyTimePerAbsence
+- SupportTutoringInteraction
+- AcademicEngagementScore
+- ActivityCount
+- SupportActivityInteraction
+
+Total de atributos:
+- 12 atributos base
+- 5 atributos derivados
+- 17 atributos en total
+
+Parámetros totales:
+No aplica como conteo de parámetros entrenables de red neuronal.
+
+Parámetros entrenables (trainable):
+No aplica.
+
+Parámetros no entrenables (non-trainable):
+No aplica.
+
+Configuración ganadora:
+- n_estimators: 200
+- max_depth: 10
+- min_samples_leaf: 4
+- class_weight: None
+
+Resultados principales:
+- accuracy: 0.7604
+- precision_macro: 0.6495
+- recall_macro: 0.5946
+- f1_macro: 0.6039
+
+Descripción:
+Este experimento se diseñó para estudiar qué tanta señal predictiva podía recuperarse sin usar GPA. En lugar de depender de una variable académica ya consolidada, se construyeron atributos derivados a partir de hábitos, apoyo y participación, con el fin de representar mejor el compromiso académico y la caracterización temprana del estudiante.
